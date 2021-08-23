@@ -3,6 +3,7 @@
 namespace Shortcode\Shortcode;
 
 use Omeka\Api\Exception\NotFoundException;
+use Omeka\Api\Representation\MediaRepresentation;
 
 class Resource extends AbstractShortcode
 {
@@ -26,6 +27,13 @@ class Resource extends AbstractShortcode
         }
 
         $resourceType = $resource->resourceName();
+
+        $player = array_key_exists('player', $args) && strtolower($args['player']) === 'default';
+        if ($resourceType === 'media'
+            && ($player || $this->shortcodeName === 'file')
+        ) {
+            return $this->renderMedia($resource, $args);
+        }
 
         $resourceTypeTemplates = [
             'items' => 'item',
@@ -51,6 +59,48 @@ class Resource extends AbstractShortcode
             'resource' => $resource,
             $resourceTypeVars[$resourceType] => $resource,
             'resourceType' => $resourceTypesCss[$resourceType],
+        ]);
+    }
+
+    protected function renderMedia(MediaRepresentation $resource, array $args): string
+    {
+        //  This is the type of thumbnail, that is rendered and converted into a
+        // class in Omeka Classic.
+        $thumbnailTypes = [
+            null => 'medium',
+            'large' => 'large',
+            'medium' => 'medium',
+            'square' => 'square',
+            // For compatibility with Omeka Classic.
+            'thumbnail' => 'medium',
+            'square_thumbnail' => 'square',
+            'fullsize' => 'large',
+        ];
+
+        /** @deprecated "size" is deprecated, use "thumbnail". */
+        if (isset($args['thumbnail'])) {
+            $thumbnailType = $thumbnailTypes[$args['thumbnail']] ?? 'medium';
+        } elseif (isset($args['size'])) {
+            $thumbnailType = $thumbnailTypes[$args['size']] ?? 'medium';
+        } else {
+            $thumbnailType = null;
+        }
+
+        unset(
+            $args['thumbnail'],
+            $args['size'],
+            $args['player']
+        );
+
+        $args['thumbnailType'] = $thumbnailType;
+        $args['link'] = $this->view->siteSetting('attachment_link_type', 'item');
+
+        $partial = 'common/shortcode/file';
+        return $this->view->partial($partial, [
+            'resource' => $resource,
+            'media' => $resource,
+            'thumbnailType' => $thumbnailType,
+            'options' => $args,
         ]);
     }
 }

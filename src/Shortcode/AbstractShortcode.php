@@ -31,10 +31,20 @@ abstract class AbstractShortcode implements ShortcodeInterface
     abstract public function render(array $args = []): string;
 
     /**
+     * Check if a value is a boolean.
+     *
+     * For api, it is recommended to use boolean().
+     */
+     protected function bool(string $value): bool
+     {
+         return !in_array(strtolower($value), ['0', 'false'], true);
+     }
+
+    /**
      * Check if a value is a boolean and return "0" or "1".
      *
      * The casting is required to keep at least one character to the value, else
-     * it will be managed as a null.
+     * it will be managed as a null in the api.
      */
     protected function boolean(string $value): int
     {
