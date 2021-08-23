@@ -33,15 +33,23 @@
  */
 namespace Shortcode;
 
+if (!class_exists(\Generic\AbstractModule::class)) {
+    require file_exists(dirname(__DIR__) . '/Generic/AbstractModule.php')
+        ? dirname(__DIR__) . '/Generic/AbstractModule.php'
+        : __DIR__ . '/src/Generic/AbstractModule.php';
+}
+
+use Generic\AbstractModule;
 use Laminas\EventManager\Event;
 use Laminas\EventManager\SharedEventManagerInterface;
-use Omeka\Module\AbstractModule;
 
 class Module extends AbstractModule
 {
-    public function getConfig()
+    const NAMESPACE = __NAMESPACE__;
+
+    protected function preInstall(): void
     {
-        return include __DIR__ . '/config/module.config.php';
+        require_once __DIR__ . '/data/scripts/upgrade_vocabulary.php';
     }
 
     public function attachListeners(SharedEventManagerInterface $sharedEventManager): void

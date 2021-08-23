@@ -1,0 +1,11 @@
+{
+    "vocabulary": {
+        "o:namespace_uri": "https://omeka.org/s/vocabs/curation/",
+        "o:prefix": "curation",
+        "o:label": "Curation",
+        "o:comment": "Curation of resources."
+    },
+    "strategy": "file",
+    "file": "curation.ttl",
+    "format": "turtle"
+}
