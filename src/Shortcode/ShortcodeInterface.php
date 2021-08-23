@@ -24,5 +24,5 @@ interface ShortcodeInterface
      *
      * @return string The output must be cast to string to support strict types.
      */
-    public function render(?array $args = null): string;
+    public function render(array $args = []): string;
 }

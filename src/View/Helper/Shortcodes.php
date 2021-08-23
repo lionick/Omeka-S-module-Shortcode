@@ -66,19 +66,17 @@ class Shortcodes extends AbstractHelper
     }
 
     /**
-     * Retrieve all attributes from the shortcodes tag.
+     * Retrieve all attributes from the shortcodes tag as an associative array.
      *
-     * The attributes list has the attribute name as the key and the value of the
-     * attribute as the value in the key/value pair. This allows for easier
-     * retrieval of the attributes, since all attributes have to be known.
+     * Attributes without keys have numerical keys in the array.
      *
      * It supports html encoded single and double quotes.
      *
      * @link https://core.trac.wordpress.org/browser/tags/5.8/src/wp-includes/shortcodes.php
      * @link https://github.com/omeka/Omeka/blob/master/application/views/helpers/Shortcodes.php
      *
-     * @return array Unlike WordPress, always return an array. Undetermined keys
-     * are numeric.
+     * @return array Unlike WordPress, always return an array. The attributes
+     * without keys are listed as numeric.
      */
     protected function parseShortcodeAttributes(string $attributes): array
     {

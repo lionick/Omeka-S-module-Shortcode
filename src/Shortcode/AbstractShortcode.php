@@ -28,7 +28,7 @@ abstract class AbstractShortcode implements ShortcodeInterface
         return $this;
     }
 
-    abstract public function render(?array $args = null): string;
+    abstract public function render(array $args = []): string;
 
     /**
      * Check if a value is a boolean and return "0" or "1".
