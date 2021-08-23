@@ -104,6 +104,15 @@ abstract class AbstractShortcode implements ShortcodeInterface
             : array_map('trim', explode(',', $value));
     }
 
+    protected function getThemeTemplet(array $args): ?string
+    {
+        if (isset($args['templet']) && strpos($args['templet'], '.') === false) {
+            $partial = 'common/shortcode/' . $args['templet'];
+            return $this->view->resolver($partial) ? $partial : null;
+        }
+        return null;
+    }
+
     protected function currentSiteId(): ?int
     {
         static $siteId;

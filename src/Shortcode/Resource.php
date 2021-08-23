@@ -73,10 +73,11 @@ class Resource extends AbstractShortcode
             'resources' => 'resource',
         ];
 
-        if ($player) {
-            $partial = 'common/shortcode/player';
-        } else {
-            $partial = 'common/shortcode/' . $resourceTypeTemplates[$resourceType];
+        $partial = $this->getThemeTemplet($args);
+        if (!$partial) {
+            $partial = $player
+                ? 'common/shortcode/player'
+                : 'common/shortcode/' . $resourceTypeTemplates[$resourceType];
         }
 
         return $this->view->partial($partial, [
@@ -121,7 +122,7 @@ class Resource extends AbstractShortcode
         $args['thumbnailType'] = $thumbnailType;
         $args['link'] = $this->view->siteSetting('attachment_link_type', 'item');
 
-        $partial = 'common/shortcode/file';
+        $partial = $this->getThemeTemplet($args) ?? 'common/shortcode/file';
         return $this->view->partial($partial, [
             'resource' => $resource,
             'media' => $resource,
