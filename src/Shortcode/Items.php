@@ -25,7 +25,7 @@ class Items extends AbstractShortcode
         $params = [];
 
         if (isset($args['is_featured'])) {
-            $isFeatured = !in_array(strtolower($args['is_featured']), ['0', 'false'], true);
+            $isFeatured = $this->boolean($args['is_featured']);
             $params['property'][] = [
                 'property' => 'curation:featured',
                 'joiner' => 'and',
@@ -35,19 +35,23 @@ class Items extends AbstractShortcode
 
         // Require module AdvancedSearch.
         if (isset($args['has_image'])) {
-            $params['has_thumbnails'] = !in_array(strtolower($args['has_image']), ['0', 'false'], true);
+            $params['has_thumbnails'] = $this->boolean($args['has_image']);
         }
 
         // Require module AdvancedSearch.
         if (isset($args['has_media'])) {
-            $params['has_media'] = !in_array(strtolower($args['has_media']), ['0', 'false'], true);
+            $params['has_media'] = $this->boolean($args['has_media']);
         }
 
         // "collection" is an alias of "item_set".
         if (isset($args['item_set'])) {
-            $params['item_set_id'] = $args['item_set'];
+            $params['item_set_id'] = $this->listIds($args['item_set']);
         } elseif (isset($args['collection'])) {
-            $params['item_set_id'] = $args['collection'];
+            $params['item_set_id'] = $this->listIds($args['collection']);
+        }
+
+        if (isset($args['class'])) {
+            $params['resource_class_term'] = $this->listTermsOrIds($args['class']);
         }
 
         /** @deprecated "item_type" is deprecated, use "class_label" or"class". */
@@ -57,18 +61,25 @@ class Items extends AbstractShortcode
             $params['resource_class_label'] = $args['item_type'];
         }
 
-        if (isset($args['class'])) {
-            $params['resource_class_term'] = $args['class'];
+        if (isset($args['template'])) {
+            $params['resource_template_id'] = $this->listIds($args['template']);
         }
 
-        if (isset($args['template'])) {
-            $params['resource_template_label'] = $args['template'];
+        if (isset($args['template_label'])) {
+            $params['resource_template_label'] = $args['template_label'];
         }
 
         // Require module AdvancedSearch.
-        if (isset($args['tags'])) {
+        if (isset($args['tag'])) {
             $params['property'][] = [
-                'property' => 'curation:tags',
+                'property' => 'curation:tag',
+                'joiner' => 'and',
+                'type' => 'list',
+                'text' => array_map('trim', explode(',', $args['tag'])),
+            ];
+        } elseif (isset($args['tags'])) {
+            $params['property'][] = [
+                'property' => 'curation:tag',
                 'joiner' => 'and',
                 'type' => 'list',
                 'text' => array_map('trim', explode(',', $args['tags'])),
@@ -84,13 +95,13 @@ class Items extends AbstractShortcode
 
         /** @deprecated "ids" is deprecated, use singular "id". */
         if (isset($args['id'])) {
-            $params['id'] = $args['id'];
+            $params['id'] = $this->listIds($args['id']);
         } elseif (isset($args['ids'])) {
-            $params['id'] = array_map('trim', explode(',', $args['ids']));
+            $params['id'] = $this->listIds($args['ids']);
         }
 
         if (isset($args['sort'])) {
-            $params['sort_by'] = $args['sort'];
+            $params['sort_by'] = $args['sort'] === 'added' ? 'created' : $args['sort'];
         }
 
         if (isset($args['order'])) {
@@ -98,7 +109,12 @@ class Items extends AbstractShortcode
         }
 
         if (isset($args['num'])) {
-            $params['limit'] = $args['num'];
+            $limit = (int) $args['num'];
+            // Unlike Omeka classic, the results are unlimited by default, so
+            // "0" means "0".
+            if ($limit > 0) {
+                $params['limit'] = $limit;
+            }
         } else {
             $params['limit'] = 10;
         }

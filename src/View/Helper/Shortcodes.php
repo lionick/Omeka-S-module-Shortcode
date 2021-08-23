@@ -26,25 +26,27 @@ class Shortcodes extends AbstractHelper
     /**
      * Render all shortcodes present in a string.
      *
-     * @see \Omeka_View_Helper_Shortcodes::shortcodes()
+     * @link https://core.trac.wordpress.org/browser/tags/5.8/src/wp-includes/shortcodes.php
      * @link https://github.com/omeka/Omeka/blob/master/application/views/helpers/Shortcodes.php
      */
-    public function __invoke($string): string
+    public function __invoke($content): string
     {
         // Quick check.
-        if (strpos($string, '[') === false) {
-            return $string;
+        if (strpos($content, '[') === false) {
+            return $content;
         }
 
-        // Get the list of shortcodes in all the string.
+        // WordPress pattern handles more cases but it is too much complex.
+        // Furthermore, it requires a "/" and may be divided in two parts.
+
+        // Process all strings looking like a shortcode in all the content.
         $pattern = '/\[(\w+)\s*([^\]]*)\]/s';
-        return preg_replace_callback($pattern, [$this, 'handleShortcode'], $string);
+        return preg_replace_callback($pattern, [$this, 'handleShortcode'], $content);
     }
 
     /**
      * Parse a detected shortcode and replace it with its actual content, or return it unchanged.
      *
-     * @see \Omeka_View_Helper_Shortcodes::handleShortcode()
      * @link https://github.com/omeka/Omeka/blob/master/application/views/helpers/Shortcodes.php
      */
     protected function handleShortcode(array $matches): string
@@ -55,6 +57,7 @@ class Shortcodes extends AbstractHelper
         }
 
         $args = $this->parseShortcodeAttributes($matches[2]);
+
         return $this->shortcodeManager
             ->get($shortcodeName)
             ->setView($this->view)
@@ -62,10 +65,19 @@ class Shortcodes extends AbstractHelper
     }
 
     /**
-     * Parse shortcode attributes.
+     * Retrieve all attributes from the shortcodes tag.
      *
-     * @see \Omeka_View_Helper_Shortcodes::parseShortcodeAttributes()
+     * The attributes list has the attribute name as the key and the value of the
+     * attribute as the value in the key/value pair. This allows for easier
+     * retrieval of the attributes, since all attributes have to be known.
+     *
+     * It supports html encoded single and double quotes.
+     *
+     * @link https://core.trac.wordpress.org/browser/tags/5.8/src/wp-includes/shortcodes.php
      * @link https://github.com/omeka/Omeka/blob/master/application/views/helpers/Shortcodes.php
+     *
+     * @return array Unlike WordPress, always return an array. Undetermined keys
+     * are numeric.
      */
     protected function parseShortcodeAttributes(string $attributes): array
     {
@@ -75,46 +87,78 @@ class Shortcodes extends AbstractHelper
         }
 
         $args = [];
-        $pattern =
-            // Start by looking for attribute values in double quotes
-            '/(\w+)'        // Attribute key
-            . '\s*=\s*'     // Whitespace and =
-            . '"([^"]*)"'   // Attrbiute value
-            . '(?:\s|$)'    // Space or end of string
-            . '|'           // Or look for attribute values in single quotes
-            . '(\w+)'       // Attribute key
-            . '\s*=\s*'     // Whitespace and =
-            . '\'([^\']*)\''// Attribute value
-            . '(?:\s|$)'    // Space or end of string
-            . '|'           // Or look for attribute values without quotes
-            . '(\w+)'       // Attribute key
-            . '\s*=\s*'     // Whitespace and =
-            . '([^\s\'"]+)' // Attribute value
-            . '(?:\s|$)'    // Space or end of string
-            . '|'           // Or look for single value
-            . '"([^"]*)"'   // Attribute value alone
-            . '(?:\s|$)'    // Space or end of string
-            . '|'           // Or look for single value
-            . '(\S+)'       // Attribute value alone
-            . '(?:\s|$)/';  // Space or end of string
+
+        // From WordPress. Fix special spaces.
+        $attributes = preg_replace('/[\x{00a0}\x{200b}]+/u', ' ', $attributes);
+
+        // The html text area converts single and double quotes into entities.
+        // They are replaced before with control characters and reset after to
+        // manage it. It handles most of the real life cases (except ocr, but it
+        // will be rare that a random string looks like a shortcode).
+        $attributes = str_replace(['&quot;', '&#39;'], [chr(2), chr(3)], $attributes);
+        $pattern = '/(?J)'
+            // key="val ue"
+            . '(?<key>[\w-]+)\s*=\s*"(?<value>[^"]*)"(?:\s|$)'
+            // key='val ue'
+            . '|(?<key>[\w-]+)\s*=\s*\'(?<value>[^\']*)\'(?:\s|$)'
+            // key=val
+            . '|(?<key>[\w-]+)\s*=\s*(?<value>[^\s\'"\x02\x03]+)(?:\s|$)'
+
+            // Manage html entities for single and double quotes.
+            // key=&quot;val ue&quot;
+            . '|(?<key>[\w-]+)\s*=\s*\x02(?<value>[^\x02]*)\x02(?:\s|$)'
+            // key=&#39;val ue&#39;
+            . '|(?<key>[\w-]+)\s*=\s*\x03(?<value>[^\x03]*)\x03(?:\s|$)'
+
+            // "val ue"
+            . '|"(?<value>[^"]*)"(?:\s|$)'
+            // 'val ue'
+            . '|\'(?<value>[^\']*)\'(?:\s|$)'
+
+            // &quot;val ue&quot;
+            . '|\x02(?<value>[^\x02]*)\x02(?:\s|$)'
+            // &#39;val ue&#39;
+            . '|\x03(?<value>[^\x03]*)\x03(?:\s|$)'
+
+            // val
+            . '|(?<value>\S+)(?:\s|$)'
+            . '/';
+
         $matches = [];
-        if (preg_match_all($pattern, $attributes, $matches, PREG_SET_ORDER)) {
+        if (preg_match_all($pattern, $attributes, $matches, PREG_SET_ORDER, 0)) {
             foreach ($matches as $m) {
-                if (!empty($m[1])) {
-                    $args[strtolower($m[1])] = $m[2];
-                } elseif (!empty($m[3])) {
-                    $args[strtolower($m[3])] = $m[4];
-                } elseif (!empty($m[5])) {
-                    $args[strtolower($m[5])] = $m[6];
-                } elseif (isset($m[7])) {
-                    $args[] = $m[7];
-                } elseif (isset($m[8])) {
-                    $args[] = $m[8];
+                $value = $m['value'];
+                if (strlen($value) > 1) {
+                    $first = mb_substr($value, 0, 1);
+                    $last = mb_substr($value, 0, -1);
+                    if (($first === chr(2) && $last === chr(2))
+                      || ($first === chr(3) && $last === chr(3))
+                    ) {
+                        $value = mb_substr($value, 1, -1);
+                    }
+                }
+                $value = stripcslashes(str_replace([chr(2), chr(3)], ['&quot;', '&#39;'], $value));
+                if ($m['key']) {
+                    $args[strtolower($m['key'])] = $value;
+                } else {
+                    $args[] = $value;
+                }
+            }
+
+            // Reject any unclosed HTML elements.
+            foreach ($args as &$value) {
+                if (strpos($value, '<') !== false
+                    && preg_match('/^[^<]*+(?:<[^>]*+>[^<]*+)*+$/', $value) !== 1
+                ) {
+                    $value = '';
                 }
             }
         } else {
-            $args = ltrim($attributes);
+            $args = [
+                ltrim($attributes)
+            ];
         }
+
         return $args;
     }
 }

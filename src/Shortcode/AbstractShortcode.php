@@ -19,6 +19,70 @@ abstract class AbstractShortcode implements ShortcodeInterface
 
     abstract public function render(?array $args = null): string;
 
+    /**
+     * Check if a value is a boolean and return "0" or "1".
+     *
+     * The casting is required to keep at least one character to the value, else
+     * it will be managed as a null.
+     */
+    protected function boolean(string $value): int
+    {
+        return (int) !in_array(strtolower($value), ['0', 'false'], true);
+    }
+
+    /**
+     * Get a list of integers from a string with comma-separated values or range.
+     *
+     * @return int[]
+     */
+    protected function listIds(string $value): array
+    {
+        if (strpos($value, ',') === false) {
+            if (strpos($value, '-') === false) {
+                return [(int) $value];
+            }
+            [$from, $to] = explode('-', $value);
+            $from = (int) $from;
+            $to = (int) $to;
+            return range(min($from, $to), max($from, $to));
+        }
+        return array_map('intval', explode(',', $value));
+    }
+
+    /**
+     * Get a list of integers from a string with comma-separated values.
+     *
+     * @return int[]|int A single value can be returned for perfomance.
+     */
+    protected function singleOrListIds(string $value)
+    {
+        return strpos($value, ',') === false
+            ? (int) $value
+            : array_map('intval', explode(',', $value));
+    }
+
+    /**
+     * Get a list of terms or ids from a string with comma-separated values.
+     */
+    protected function listTermsOrIds(string $value): array
+    {
+        return strpos($value, ',') === false
+            ? [$value]
+            : array_map('trim', explode(',', $value));
+    }
+
+    /**
+     * Get a list of terms or ids from a string with comma separated values.
+     *
+     * @return array|string A single value can be returned for perfomance.
+     */
+    protected function singleOrListTermsOrIds(string $value)
+    {
+        return strpos($value, ',') === false
+            ? $value
+            : array_map('trim', explode(',', $value));
+    }
+
     protected function currentSiteId(): ?int
     {
         static $siteId;
