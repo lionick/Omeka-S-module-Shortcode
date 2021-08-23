@@ -131,4 +131,119 @@ abstract class AbstractShortcode implements ShortcodeInterface
         }
         return $siteId ?: null;
     }
+
+    protected function apiQuery(array $args): array
+    {
+        // Don't check or cast data here but in api.
+
+        $query = [];
+
+        if (!empty($args['query'])) {
+            parse_str(ltrim($args['query'], "? \t\n\r\0\x0B"), $query);
+        }
+
+        if (isset($args['site'])) {
+            $query['site_id'] = $args['site'];
+        } else {
+            // Force the current site by default (null is skipped by api).
+            $query['site_id'] = $this->currentSiteId();
+        }
+
+        /** @deprecated "ids" is deprecated, use singular "id". */
+        if (isset($args['id'])) {
+            $query['id'] = $this->listIds($args['id']);
+        } elseif (isset($args['ids'])) {
+            $query['id'] = $this->listIds($args['ids']);
+        }
+
+        /** @deprecated "user" is deprecated, use "owner". */
+        if (isset($args['owner'])) {
+            $query['owner_id'] = $args['owner'];
+        } elseif (isset($args['user'])) {
+            $query['owner_id'] = $args['user'];
+        }
+
+        // "collection" is an alias of "item_set".
+        if (isset($args['item_set'])) {
+            $query['item_set_id'] = $this->listIds($args['item_set']);
+        } elseif (isset($args['collection'])) {
+            $query['item_set_id'] = $this->listIds($args['collection']);
+        }
+
+        if (isset($args['class'])) {
+            $query['resource_class_term'] = $this->listTermsOrIds($args['class']);
+        }
+
+        /** @deprecated "item_type" is deprecated, use "class_label" or"class". */
+        if (isset($args['class_label'])) {
+            $query['resource_class_label'] = $args['class_label'];
+        } elseif (isset($args['item_type'])) {
+            $query['resource_class_label'] = $args['item_type'];
+        }
+
+        if (isset($args['template'])) {
+            $query['resource_template_id'] = $this->listIds($args['template']);
+        }
+
+        if (isset($args['template_label'])) {
+            $query['resource_template_label'] = $args['template_label'];
+        }
+
+        // Require module AdvancedSearch.
+        if (isset($args['tag'])) {
+            $query['property'][] = [
+                'property' => 'curation:tag',
+                'joiner' => 'and',
+                'type' => 'list',
+                'text' => array_map('trim', explode(',', $args['tag'])),
+            ];
+        } elseif (isset($args['tags'])) {
+            $query['property'][] = [
+                'property' => 'curation:tag',
+                'joiner' => 'and',
+                'type' => 'list',
+                'text' => array_map('trim', explode(',', $args['tags'])),
+            ];
+        }
+
+        if (isset($args['is_featured'])) {
+            $isFeatured = $this->boolean($args['is_featured']);
+            $query['property'][] = [
+                'property' => 'curation:featured',
+                'joiner' => 'and',
+                'type' => $isFeatured ? 'ex' : 'nex',
+            ];
+        }
+
+        // Require module AdvancedSearch.
+        if (isset($args['has_image'])) {
+            $query['has_thumbnails'] = $this->boolean($args['has_image']);
+        }
+
+        // Require module AdvancedSearch.
+        if (isset($args['has_media'])) {
+            $query['has_media'] = $this->boolean($args['has_media']);
+        }
+
+        if (isset($args['sort'])) {
+            $query['sort_by'] = $args['sort'] === 'added' ? 'created' : $args['sort'];
+        }
+
+        if (isset($args['order'])) {
+            $query['sort_order'] = in_array(strtolower($args['order']), ['d', 'desc']) ? 'desc' : 'asc';
+        }
+
+        if (isset($args['num'])) {
+            $limit = (int) $args['num'];
+            // Unlike Omeka classic, the results are unlimited by default, so
+            // "0" means "0".
+            if ($limit > 0) {
+                $query['limit'] = $limit;
+            }
+        } else {
+            $query['limit'] = 10;
+        }
+
+        return $query;
+    }
 }

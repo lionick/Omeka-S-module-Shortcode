@@ -20,6 +20,7 @@ return [
     ],
     'shortcodes' => [
         'invokables' => [
+            'count' => Shortcode\Count::class,
             'noop' => Shortcode\Noop::class,
 
             'collection' => Shortcode\Resource::class,
@@ -32,6 +33,7 @@ return [
             'items' => Shortcode\Resources::class,
             'item_sets' => Shortcode\Resources::class,
             'medias' => Shortcode\Resources::class,
+            // TODO Support "resources".
             // 'resources' => Shortcode\Resources::class,
 
             // Deprecated aliases for compatibility with Omeka Classic.
