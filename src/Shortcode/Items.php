@@ -15,36 +15,68 @@ class Items extends AbstractShortcode
         $params = [];
 
         if (isset($args['is_featured'])) {
-            $params['isFeatured'] = $args['is_featured'];
+            $isFeatured = !in_array(strtolower($args['is_featured']), ['0', 'false'], true);
+            $params['property'][] = [
+                'property' => 'curation:featured',
+                'joiner' => 'and',
+                'type' => $isFeatured ? 'ex' : 'nex',
+            ];
         }
 
+        // Require module AdvancedSearch.
         if (isset($args['has_image'])) {
-            $params['hasImage'] = $args['has_image'];
+            $params['has_thumbnails'] = !in_array(strtolower($args['has_image']), ['0', 'false'], true);
         }
 
-        if (isset($args['collection'])) {
+        // Require module AdvancedSearch.
+        if (isset($args['has_media'])) {
+            $params['has_media'] = !in_array(strtolower($args['has_media']), ['0', 'false'], true);
+        }
+
+        // "collection" is an alias of "item_set".
+        if (isset($args['item_set'])) {
+            $params['item_set_id'] = $args['item_set'];
+        } elseif (isset($args['collection'])) {
             $params['item_set_id'] = $args['collection'];
         }
 
-        if (isset($args['item_type'])) {
+        /** @deprecated "item_type" is deprecated, use "class_label" or"class". */
+        if (isset($args['class_label'])) {
+            $params['resource_class_label'] = $args['class_label'];
+        } elseif (isset($args['item_type'])) {
             $params['resource_class_label'] = $args['item_type'];
         }
 
+        if (isset($args['class'])) {
+            $params['resource_class_term'] = $args['class'];
+        }
+
+        if (isset($args['template'])) {
+            $params['resource_template_label'] = $args['template'];
+        }
+
+        // Require module AdvancedSearch.
         if (isset($args['tags'])) {
             $params['property'][] = [
-                'property' => 'dcterms:subject',
+                'property' => 'curation:tags',
                 'joiner' => 'and',
                 'type' => 'list',
                 'text' => array_map('trim', explode(',', $args['tags'])),
             ];
         }
 
-        if (isset($args['user'])) {
+        /** @deprecated "user" is deprecated, use "owner". */
+        if (isset($args['owner'])) {
+            $params['owner_id'] = $args['owner'];
+        } elseif (isset($args['user'])) {
             $params['owner_id'] = $args['user'];
         }
 
-        if (isset($args['ids'])) {
-            $params['id'] = $args['ids'];
+        /** @deprecated "ids" is deprecated, use singular "id". */
+        if (isset($args['id'])) {
+            $params['id'] = $args['id'];
+        } elseif (isset($args['ids'])) {
+            $params['id'] = array_map('trim', explode(',', $args['ids']));
         }
 
         if (isset($args['sort'])) {
@@ -52,7 +84,7 @@ class Items extends AbstractShortcode
         }
 
         if (isset($args['order'])) {
-            $params['sort_order'] = $args['order'];
+            $params['sort_order'] = in_array(strtolower($args['order']), ['d', 'desc']) ? 'desc' : 'asc';
         }
 
         if (isset($args['num'])) {
