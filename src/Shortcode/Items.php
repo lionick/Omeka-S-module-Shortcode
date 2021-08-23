@@ -12,6 +12,16 @@ class Items extends AbstractShortcode
      */
     public function render(?array $args = null): string
     {
+        // By default the ten oldest items.
+        if (empty($args)) {
+            $args = [
+                'sort' => 'created',
+                'order' => 'asc',
+            ];
+        }
+
+        // Don't check or cast data here but in api.
+
         $params = [];
 
         if (isset($args['is_featured'])) {
