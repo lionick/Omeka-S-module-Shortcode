@@ -1,0 +1,29 @@
+<?php
+/**
+ * @var \Laminas\View\Renderer\PhpRenderer $this
+ * @var \Omeka\Api\Representation\ItemRepresentation[] $resources
+ * @var \Omeka\Api\Representation\ItemRepresentation[] $items
+ */
+
+// Adapted from view/common/block-layout/browse-preview
+
+$plugins = $this->getHelperPluginManager();
+$escape = $plugins->get('escapeHtml');
+$thumbnail = $plugins->get('thumbnail');
+?>
+
+<div class="shortcode items resources">
+    <ul class="resource-list preview">
+        <?php foreach ($resources as $resource): ?>
+        <?php $title = $resource->displayTitle(); ?>
+        <?php $description = $resource->displayDescription(); ?>
+        <li class="item resource">
+            <?= $resource->linkRaw($thumbnail($resource, 'medium', ['title' => $title])) ?>
+            <h4><?= $resource->link($title) ?></h4>
+            <?php if ($description): ?>
+            <div class="description"><?= $escape($description) ?></div>
+            <?php endif; ?>
+        </li>
+        <?php endforeach; ?>
+    </ul>
+</div>
