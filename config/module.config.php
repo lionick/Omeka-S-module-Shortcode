@@ -23,12 +23,14 @@ return [
             'count' => Shortcode\Count::class,
             'noop' => Shortcode\Noop::class,
 
+            'annotation' => Shortcode\Resource::class,
             'collection' => Shortcode\Resource::class,
             'item' => Shortcode\Resource::class,
             'item_set' => Shortcode\Resource::class,
             'media' => Shortcode\Resource::class,
             'resource' => Shortcode\Resource::class,
 
+            'annotations' => Shortcode\Resources::class,
             'collections' => Shortcode\Resources::class,
             'items' => Shortcode\Resources::class,
             'item_sets' => Shortcode\Resources::class,
@@ -39,12 +41,14 @@ return [
             // Deprecated aliases for compatibility with Omeka Classic.
             'file' => Shortcode\Resource::class,
 
+            // 'featured_annotations' => Shortcode\Resources::class,
             'featured_collections' => Shortcode\Resources::class,
             // 'featured_item_sets' => Shortcode\Resources::class,
             'featured_items' => Shortcode\Resources::class,
             // 'featured_media' => Shortcode\Resources::class,
             // 'featured_medias' => Shortcode\Resources::class,
             // 'featured_resources' => Shortcode\Resources::class,
+            // 'recent_annotations' => Shortcode\Resources::class,
             'recent_collections' => Shortcode\Resources::class,
             // 'recent_item_sets' => Shortcode\Resources::class,
             'recent_items' => Shortcode\Resources::class,

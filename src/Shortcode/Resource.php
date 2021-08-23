@@ -55,18 +55,21 @@ class Resource extends AbstractShortcode
         }
 
         $resourceTypeTemplates = [
+            'annotations' => 'annotation',
             'items' => 'item',
             'item_sets' => 'item-set',
             'media' => 'media',
             'resources' => 'resource',
         ];
         $resourceTypeVars = [
+            'annotations' => 'annotations',
             'items' => 'items',
             'item_sets' => 'itemSets',
             'media' => 'medias',
             'resources' => 'resources',
         ];
         $resourceTypesCss = [
+            'annotations' => 'annotation',
             'items' => 'item',
             'item_sets' => 'item-set',
             'media' => 'media',

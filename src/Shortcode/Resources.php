@@ -14,30 +14,36 @@ class Resources extends AbstractShortcode
     {
         // It's not possible to search resources for now, so use items.
         $shortcodeToResources = [
+            'annotations' => 'annotations',
+            'collections' => 'item_sets',
+            'items' => 'items',
+            'item_sets' => 'item_sets',
+            'media' => 'media',
+            'medias' => 'media',
+            'resources' => 'items',
+
+            'featured_annotations' => 'annotations',
             'featured_collections' => 'item_sets',
             'featured_item_sets' => 'item_sets',
             'featured_items' => 'items',
             'featured_media' => 'media',
             'featured_medias' => 'media',
             'featured_resources' => 'items',
-            'collections' => 'item_sets',
-            'items' => 'items',
-            'item_sets' => 'item_sets',
-            'media' => 'media',
-            'medias' => 'media',
+
+            'recent_annotations' => 'annotations',
             'recent_collections' => 'item_sets',
             'recent_item_sets' => 'item_sets',
             'recent_items' => 'items',
             'recent_media' => 'media',
             'recent_medias' => 'media',
             'recent_resources' => 'items',
-            'resources' => 'items',
         ];
 
         $resourceType = $shortcodeToResources[$this->shortcodeName];
 
         // Manage shortcuts from Omeka Classic.
         $recents = [
+            'recent_annotations',
             'recent_collections',
             'recent_item_sets',
             'recent_items',
@@ -46,6 +52,7 @@ class Resources extends AbstractShortcode
             'recent_resources',
         ];
         $featureds = [
+            'featured_annotations',
             'featured_collections',
             'featured_item_sets',
             'featured_items',
@@ -80,18 +87,21 @@ class Resources extends AbstractShortcode
         $resources = $this->view->api()->search($resourceType, $query)->getContent();
 
         $resourceTypeTemplates = [
+            'annotations' => 'annotations',
             'items' => 'items',
             'item_sets' => 'item-sets',
             'media' => 'medias',
             'resources' => 'resources',
         ];
         $resourceTypeVars = [
+            'annotations' => 'annotations',
             'items' => 'items',
             'item_sets' => 'itemSets',
             'media' => 'medias',
             'resources' => 'resources',
         ];
         $resourceTypesCss = [
+            'annotations' => 'annotation',
             'items' => 'item',
             'item_sets' => 'item-set',
             'media' => 'media',
