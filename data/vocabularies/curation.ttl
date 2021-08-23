@@ -19,13 +19,6 @@ curation:reservedAccess a rdf:Property ;
     rdfs:comment "Place la ressource en accès restreint dès qu‘une valeur quelconque est définie."@fr ;
     vs:term_status "experimental" .
 
-curation:isReservedAccess a rdf:Property ;
-    rdfs:label "Is reserved access"@en ;
-    rdfs:label "Est en accès réservé"@fr ;
-    rdfs:comment "Define the resource as a restricted access one when a non-zero (“0”) value is set."@en ;
-    rdfs:comment "Place la ressource en accès restreint dès qu‘une valeur autre que zéro (“0”) est définie."@fr ;
-    vs:term_status "experimental" .
-
 curation:newResource a rdf:Property ;
     rdfs:label "New resource"@en ;
     rdfs:label "Nouvelle ressource"@fr ;
@@ -33,25 +26,11 @@ curation:newResource a rdf:Property ;
     rdfs:comment "Marque la ressource comme nouvelle dès qu‘une valeur quelconque est définie."@fr ;
     vs:term_status "experimental" .
 
-curation:isNewResource a rdf:Property ;
-    rdfs:label "Is new resource"@en ;
-    rdfs:label "Est une ressource nouvelle"@fr ;
-    rdfs:comment "Mark the resource as a new one when a non-zero (“0”) value is set."@en ;
-    rdfs:comment "Marque la ressource comme nouvelle dès qu‘une valeur autre que zéro (“0”) est définie."@fr ;
-    vs:term_status "experimental" .
-
 curation:featured a rdf:Property ;
     rdfs:label "Featured"@en ;
     rdfs:label "En vedette"@fr ;
     rdfs:comment "Mark the resource as a featured one as soon as a value is set, whatever it is."@en ;
     rdfs:comment "Marque la ressource comme vedette dès qu‘une valeur quelconque est définie."@fr ;
-    vs:term_status "experimental" .
-
-curation:isFeatured a rdf:Property ;
-    rdfs:label "Is featured"@en ;
-    rdfs:label "Est en vedette"@fr ;
-    rdfs:comment "Mark the resource as a featured one when the a non-zero (“0”) value is set."@en ;
-    rdfs:comment "Marque la ressource comme vedette dès qu‘une valeur autre que zéro (“0”) est définie."@fr ;
     vs:term_status "experimental" .
 
 curation:category a rdf:Property ;
