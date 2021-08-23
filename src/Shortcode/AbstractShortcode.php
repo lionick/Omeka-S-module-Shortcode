@@ -18,4 +18,23 @@ abstract class AbstractShortcode implements ShortcodeInterface
     }
 
     abstract public function render(?array $args = null): string;
+
+    protected function currentSiteId(): ?int
+    {
+        static $siteId;
+        if (is_null($siteId)) {
+            $vars = $this->view->vars();
+            $site = $vars->offsetGet('site');
+            if (!$site) {
+                $site = $this->view
+                    ->getHelperPluginManager()
+                    ->get('Laminas\View\Helper\ViewModel')
+                    ->getRoot()
+                    ->getVariable('site');
+                $vars->offsetSet('site', $site);
+            }
+            $siteId = $site ? $site->id() : 0;
+        }
+        return $siteId ?: null;
+    }
 }

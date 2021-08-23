@@ -69,6 +69,11 @@ class Shortcodes extends AbstractHelper
      */
     protected function parseShortcodeAttributes(string $attributes): array
     {
+        $attributes = trim($attributes);
+        if (!strlen($attributes)) {
+            return [];
+        }
+
         $args = [];
         $pattern =
             // Start by looking for attribute values in double quotes

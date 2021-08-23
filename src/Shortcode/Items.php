@@ -61,6 +61,13 @@ class Items extends AbstractShortcode
             $params['limit'] = 10;
         }
 
+        if (isset($args['site'])) {
+            $params['site_id'] = $args['site'];
+        } else {
+            // Force the current site by default (null is skipped by api).
+            $params['site_id'] = $this->currentSiteId();
+        }
+
         $items = $this->view->api()->search('items', $params)->getContent();
 
         return $this->view->partial('common/shortcode/items', [
