@@ -20,8 +20,10 @@ return [
     ],
     'shortcodes' => [
         'invokables' => [
+            'featured_items' => Shortcode\FeaturedItems::class,
             'items' => Shortcode\Items::class,
             'noop' => Shortcode\Noop::class,
+            'recent_items' => Shortcode\RecentItems::class,
         ],
     ],
 ];
