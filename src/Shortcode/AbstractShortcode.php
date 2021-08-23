@@ -7,9 +7,20 @@ use Laminas\View\Renderer\PhpRenderer;
 abstract class AbstractShortcode implements ShortcodeInterface
 {
     /**
+     * @var string
+     */
+    protected $shortcodeName;
+
+    /**
      * @var \Laminas\View\Renderer\PhpRenderer
      */
     protected $view;
+
+    public function setShortcodeName(string $shortcodeName ): self
+    {
+        $this->shortcodeName = $shortcodeName;
+        return $this;
+    }
 
     public function setView(PhpRenderer $view): self
     {

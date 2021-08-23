@@ -2,7 +2,7 @@
 
 namespace Shortcode\Shortcode;
 
-class Items extends AbstractShortcode
+class Resources extends AbstractShortcode
 {
     /**
      * @link https://github.com/omeka/Omeka/blob/master/application/views/helpers/Shortcodes.php
@@ -12,7 +12,62 @@ class Items extends AbstractShortcode
      */
     public function render(?array $args = null): string
     {
-        // By default the ten oldest items.
+        // It's not possible to search resources for now, so use items.
+        $shortcodeToResources = [
+            'featured_collections' => 'item_sets',
+            'featured_item_sets' => 'item_sets',
+            'featured_items' => 'items',
+            'featured_media' => 'media',
+            'featured_medias' => 'media',
+            'featured_resources' => 'items',
+            'collections' => 'item_sets',
+            'items' => 'items',
+            'item_sets' => 'item_sets',
+            'media' => 'media',
+            'medias' => 'media',
+            'recent_collections' => 'item_sets',
+            'recent_item_sets' => 'item_sets',
+            'recent_items' => 'items',
+            'recent_media' => 'media',
+            'recent_medias' => 'media',
+            'recent_resources' => 'items',
+            'resources' => 'items',
+        ];
+
+        $resourceType = $shortcodeToResources[$this->shortcodeName];
+
+        $recents = [
+            'recent_collections',
+            'recent_item_sets',
+            'recent_items',
+            'recent_media',
+            'recent_medias',
+            'recent_resources',
+        ];
+        $featureds = [
+            'featured_collections',
+            'featured_item_sets',
+            'featured_items',
+            'featured_media',
+            'featured_medias',
+            'featured_resources',
+        ];
+
+        if (in_array($this->shortcodeName, $recents)) {
+            if (!isset($args['num'])) {
+                $args['num'] = '5';
+            }
+            $args['sort'] = 'created';
+            $args['order'] = 'desc';
+        } elseif (in_array($this->shortcodeName, $featureds)) {
+            $args['is_featured'] = '1';
+            if (!isset($args['num'])) {
+                $args['num'] = '1';
+            }
+            $args['sort'] = 'random';
+        }
+
+        // By default the ten oldest resources.
         if (empty($args)) {
             $args = [
                 'sort' => 'created',
@@ -126,11 +181,32 @@ class Items extends AbstractShortcode
             $params['site_id'] = $this->currentSiteId();
         }
 
-        $items = $this->view->api()->search('items', $params)->getContent();
+        $resources = $this->view->api()->search($resourceType, $params)->getContent();
 
-        return $this->view->partial('common/shortcode/items', [
-            'resources' => $items,
-            'items' => $items,
+        $resourceTypeTemplates = [
+            'items' => 'items',
+            'item_sets' => 'item-sets',
+            'media' => 'medias',
+            'resources' => 'resources',
+        ];
+        $resourceTypeVars = [
+            'items' => 'items',
+            'item_sets' => 'itemSets',
+            'media' => 'media',
+            'resources' => 'resources',
+        ];
+        $resourceTypesCss = [
+            'items' => 'item',
+            'item_sets' => 'item-set',
+            'media' => 'media',
+            'resources' => 'resource',
+        ];
+
+        $partial = 'common/shortcode/' . $resourceType;
+        return $this->view->partial($partial, [
+            'resources' => $resources,
+            $resourceTypeVars[$resourceType] => $resources,
+            'resourceType' => $resourceTypesCss[$resourceType],
         ]);
     }
 }

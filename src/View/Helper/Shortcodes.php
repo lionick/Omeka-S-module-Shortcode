@@ -32,7 +32,7 @@ class Shortcodes extends AbstractHelper
     public function __invoke($content): string
     {
         // Quick check.
-        if (strpos($content, '[') === false) {
+        if (mb_strpos($content, '[') === false) {
             return $content;
         }
 
@@ -60,6 +60,7 @@ class Shortcodes extends AbstractHelper
 
         return $this->shortcodeManager
             ->get($shortcodeName)
+            ->setShortcodeName($shortcodeName)
             ->setView($this->view)
             ->render($args);
     }

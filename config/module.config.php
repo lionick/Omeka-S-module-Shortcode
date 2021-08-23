@@ -20,10 +20,27 @@ return [
     ],
     'shortcodes' => [
         'invokables' => [
-            'featured_items' => Shortcode\FeaturedItems::class,
-            'items' => Shortcode\Items::class,
             'noop' => Shortcode\Noop::class,
-            'recent_items' => Shortcode\RecentItems::class,
+            // Aliases for resources.
+            'collections' => Shortcode\Resources::class,
+            'items' => Shortcode\Resources::class,
+            'item_sets' => Shortcode\Resources::class,
+            'medias' => Shortcode\Resources::class,
+            // 'resources' => Shortcode\Resources::class,
+
+            // Deprecated aliases for compatibility with Omeka Classic.
+            'featured_collections' => Shortcode\Resources::class,
+            // 'featured_item_sets' => Shortcode\Resources::class,
+            'featured_items' => Shortcode\Resources::class,
+            // 'featured_media' => Shortcode\Resources::class,
+            // 'featured_medias' => Shortcode\Resources::class,
+            // 'featured_resources' => Shortcode\Resources::class,
+            'recent_collections' => Shortcode\Resources::class,
+            // 'recent_item_sets' => Shortcode\Resources::class,
+            'recent_items' => Shortcode\Resources::class,
+            // 'recent_media' => Shortcode\Resources::class,
+            // 'recent_medias' => Shortcode\Resources::class,
+            // 'recent_resources' => Shortcode\Resources::class,
         ],
     ],
 ];
