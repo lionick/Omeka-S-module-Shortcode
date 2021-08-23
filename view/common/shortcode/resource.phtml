@@ -1,0 +1,25 @@
+<?php
+/**
+ * @var \Laminas\View\Renderer\PhpRenderer $this
+ * @var \Omeka\Api\Representation\AbstractResourceEntityRepresentation $resource
+ * @var string $resourceType
+ * @var array $options
+ */
+
+// Adapted from view/common/block-layout/browse-preview
+
+$plugins = $this->getHelperPluginManager();
+$escape = $plugins->get('escapeHtml');
+$thumbnail = $plugins->get('thumbnail');
+
+$title = $resource->displayTitle();
+$description = $resource->displayDescription();
+?>
+
+<div class="shortcode <?= $resourceType ?> resource">
+    <?= $resource->linkRaw($thumbnail($resource, 'medium', ['title' => $title])) ?>
+    <h4><?= $resource->link($title) ?></h4>
+    <?php if ($description): ?>
+    <div class="description"><?= $escape($description) ?></div>
+    <?php endif; ?>
+</div>

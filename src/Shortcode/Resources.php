@@ -192,7 +192,7 @@ class Resources extends AbstractShortcode
         $resourceTypeVars = [
             'items' => 'items',
             'item_sets' => 'itemSets',
-            'media' => 'media',
+            'media' => 'medias',
             'resources' => 'resources',
         ];
         $resourceTypesCss = [
@@ -202,7 +202,7 @@ class Resources extends AbstractShortcode
             'resources' => 'resource',
         ];
 
-        $partial = 'common/shortcode/' . $resourceType;
+        $partial = 'common/shortcode/' . $resourceTypeTemplates[$resourceType];
         return $this->view->partial($partial, [
             'resources' => $resources,
             $resourceTypeVars[$resourceType] => $resources,

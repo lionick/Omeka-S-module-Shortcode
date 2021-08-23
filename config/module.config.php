@@ -21,7 +21,13 @@ return [
     'shortcodes' => [
         'invokables' => [
             'noop' => Shortcode\Noop::class,
-            // Aliases for resources.
+
+            'collection' => Shortcode\Resource::class,
+            'item' => Shortcode\Resource::class,
+            'item_set' => Shortcode\Resource::class,
+            'media' => Shortcode\Resource::class,
+            'resource' => Shortcode\Resource::class,
+
             'collections' => Shortcode\Resources::class,
             'items' => Shortcode\Resources::class,
             'item_sets' => Shortcode\Resources::class,
@@ -29,6 +35,8 @@ return [
             // 'resources' => Shortcode\Resources::class,
 
             // Deprecated aliases for compatibility with Omeka Classic.
+            'file' => Shortcode\Resource::class,
+
             'featured_collections' => Shortcode\Resources::class,
             // 'featured_item_sets' => Shortcode\Resources::class,
             'featured_items' => Shortcode\Resources::class,
