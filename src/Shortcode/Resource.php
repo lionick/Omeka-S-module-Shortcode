@@ -28,11 +28,30 @@ class Resource extends AbstractShortcode
 
         $resourceType = $resource->resourceName();
 
-        $player = array_key_exists('player', $args) && strtolower($args['player']) === 'default';
-        if ($resourceType === 'media'
-            && ($player || $this->shortcodeName === 'file')
-        ) {
-            return $this->renderMedia($resource, $args);
+        // Compatibility with Omeka Classic.
+        if ($this->shortcodeName === 'file') {
+            // A file is only a media.
+            if ($resourceType !== 'media') {
+                return '';
+            }
+            if (!isset($args['player'])) {
+                return $this->renderMedia($resource, $args);
+            }
+        }
+
+        $player = null;
+        if (isset($args['player'])) {
+            $args['player'] = lcfirst($args['player']);
+            if ($args['player'] === 'default') {
+                return $resourceType === 'media'
+                    ? $this->renderMedia($resource, $args)
+                    : '';
+            }
+            $plugins = $this->view->getHelperPluginManager();
+            if ($plugins->has($args['player'])) {
+                $player = $args['player'];
+                unset($args['player']);
+            }
         }
 
         $resourceTypeTemplates = [
@@ -54,11 +73,18 @@ class Resource extends AbstractShortcode
             'resources' => 'resource',
         ];
 
-        $partial = 'common/shortcode/' . $resourceTypeTemplates[$resourceType];
+        if ($player) {
+            $partial = 'common/shortcode/player';
+        } else {
+            $partial = 'common/shortcode/' . $resourceTypeTemplates[$resourceType];
+        }
+
         return $this->view->partial($partial, [
             'resource' => $resource,
             $resourceTypeVars[$resourceType] => $resource,
             'resourceType' => $resourceTypesCss[$resourceType],
+            'options' => $args,
+            'player' => $player,
         ]);
     }
 

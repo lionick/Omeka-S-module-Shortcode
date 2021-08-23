@@ -1,0 +1,14 @@
+<?php
+/**
+ * @var \Laminas\View\Renderer\PhpRenderer $this
+ * @var \Omeka\Api\Representation\AbstractResourceEntityRepresentation $resource
+ * @var string $resourceType
+ * @var array $options
+ * @var string $player
+ */
+
+?>
+
+<div class="shortcode <?= $resourceType ?> resource shortcode-player">
+    <?= $this->$player($resource, $options) ?>
+</div>
