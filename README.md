@@ -270,6 +270,7 @@ since 2008 (version 2.5). The same is used [in Omeka Classic] since 2014
 
 [Shortcode]: https://github.com/Daniel-KM/Omeka-S-module-Shortcode
 [Omeka S]: https://omeka.org/s
+[wikitext]: https://en.wikipedia.org/wiki/Help:Wikitext#Links_and_URLs
 [WordPress]: https://wordpress.com/support/shortcodes/
 [Omeka Classic]: https://omeka.org/classic/docs/Content/Shortcodes/
 [Installing a module]: http://dev.omeka.org/docs/s/user-manual/modules/#installing-modules
