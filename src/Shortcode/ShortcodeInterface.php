@@ -11,13 +11,17 @@ interface ShortcodeInterface
      *
      * This method simplifies using aliases (resource, item, item set, media,
      * recent, featured, etc.), without using a factory.
+     *
+     * @return self
      */
-    public function setShortcodeName(string $shortcodeName): self;
+    public function setShortcodeName(string $shortcodeName): ShortcodeInterface;
 
     /**
      * Set the current view.
+     *
+     * @return self
      */
-    public function setView(PhpRenderer $view): self;
+    public function setView(PhpRenderer $view): ShortcodeInterface;
 
     /**
      * Render the shortcode.

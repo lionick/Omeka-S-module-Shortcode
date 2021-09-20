@@ -16,13 +16,13 @@ abstract class AbstractShortcode implements ShortcodeInterface
      */
     protected $view;
 
-    public function setShortcodeName(string $shortcodeName ): self
+    public function setShortcodeName(string $shortcodeName ): ShortcodeInterface
     {
         $this->shortcodeName = $shortcodeName;
         return $this;
     }
 
-    public function setView(PhpRenderer $view): self
+    public function setView(PhpRenderer $view): ShortcodeInterface
     {
         $this->view = $view;
         return $this;
