@@ -20,8 +20,10 @@ return [
     ],
     'shortcodes' => [
         'invokables' => [
-            'count' => Shortcode\Count::class,
             'noop' => Shortcode\Noop::class,
+
+            'count' => Shortcode\Count::class,
+            'link' => Shortcode\Link::class,
 
             'annotation' => Shortcode\Resource::class,
             'collection' => Shortcode\Resource::class,
