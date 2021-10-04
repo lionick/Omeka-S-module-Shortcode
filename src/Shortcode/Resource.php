@@ -16,7 +16,12 @@ class Resource extends AbstractShortcode
     public function render(array $args = []): string
     {
         if (empty($args['id'])) {
-            return '';
+            // Check if there is a numeric argument.
+            if (empty($args[0]) || !(int) $args[0]) {
+                return '';
+            }
+            $args['id'] = $args[0];
+            unset($args[0]);
         }
 
         try {
