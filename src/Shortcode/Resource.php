@@ -3,6 +3,7 @@
 namespace Shortcode\Shortcode;
 
 use Omeka\Api\Exception\NotFoundException;
+use Omeka\Api\Representation\AbstractResourceEntityRepresentation;
 use Omeka\Api\Representation\MediaRepresentation;
 
 class Resource extends AbstractShortcode
@@ -29,6 +30,13 @@ class Resource extends AbstractShortcode
             $resource = $this->view->api()->read('resources', ['id' => $args['id']])->getContent();
         } catch (NotFoundException $e) {
             return '';
+        }
+
+        $argsValueIsUrl = array_keys($args, 'url', true);
+        $viewAsUrl = in_array('view', $argsValueIsUrl)
+            || array_filter($argsValueIsUrl, 'is_numeric');
+        if ($viewAsUrl) {
+            return $this->renderUrl($resource, $args);
         }
 
         $resourceName = $resource->resourceName();
@@ -82,6 +90,25 @@ class Resource extends AbstractShortcode
             'options' => $args,
             'player' => $player,
         ]);
+    }
+
+    protected function renderUrl(AbstractResourceEntityRepresentation $resource, array $args): string
+    {
+        if ($resource instanceof MediaRepresentation && isset($args['file'])) {
+            // TODO Use $resource->thumbnailDisplayUrl($type) (but not use often when we want file).
+            $resourceUrl = $args['file'] === 'original'
+                ? $resource->originalUrl()
+                : $resource->thumbnailUrl($args['file']);
+        } else {
+            $resourceUrl = $resource->url(null, true);
+        }
+        if (!$resourceUrl) {
+            return '';
+        }
+        $span = empty($args['span']) ? false : $this->view->escapeHtmlAttr($args['span']);
+        return $span
+            ? '<span class="' . $span . '">' . $resourceUrl . '</span>'
+            : $resourceUrl;
     }
 
     protected function renderMedia(MediaRepresentation $resource, array $args): string
