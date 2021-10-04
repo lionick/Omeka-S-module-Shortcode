@@ -12,7 +12,7 @@ class Count extends AbstractShortcode
      */
     public function render(?array $args = null): string
     {
-        $resourceTypes = [
+        $resourceNames = [
             'item' => 'items',
             'items' => 'items',
             'item_set' => 'item_sets',
@@ -26,13 +26,30 @@ class Count extends AbstractShortcode
 
         $span = empty($args['span']) ? false : $this->view->escapeHtmlAttr($args['span']);
 
-        if (empty($args['resource']) || !isset($resourceTypes[$args['resource']])) {
+        $partial = $this->getViewTemplate($args);
+
+        if (empty($args['resource']) || !isset($resourceNames[$args['resource']])) {
+            if ($partial) {
+                return $this->view->partial($partial, [
+                    'resourceType' => null,
+                    'count' => 0,
+                    'options' => $args,
+                ]);
+            }
             return $span
                 ? '<span class="' . $span . '">0</span>'
                 : '0';
         }
 
-        $resourceType = $resourceTypes[$args['resource']];
+        $resourceTypes = [
+            'annotations' => 'annotation',
+            'items' => 'item',
+            'item_sets' => 'item-set',
+            'media' => 'media',
+            'resources' => 'resource',
+        ];
+
+        $resourceName = $resourceNames[$args['resource']];
 
         $query = $this->apiQuery($args);
 
@@ -45,7 +62,17 @@ class Count extends AbstractShortcode
             $query['sort_order'],
         );
 
-        $total = (string) $this->view->api()->search($resourceType, $query)->getTotalResults();
+        $total = (string) $this->view->api()->search($resourceName, $query)->getTotalResults();
+
+        if ($partial) {
+            return $this->view->partial($partial, [
+                'resourceName' => $resourceName,
+                'resourceType' => $resourceTypes[$resourceName],
+                'count' => 0,
+                'options' => $args,
+            ]);
+        }
+
         return $span
             ? '<span class="' . $span . '">' . $total . '</span>'
             : $total;
