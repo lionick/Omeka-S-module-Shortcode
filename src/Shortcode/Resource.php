@@ -76,7 +76,7 @@ class Resource extends AbstractShortcode
             'resources' => 'resource',
         ];
 
-        $partial = $this->getThemeTemplet($args);
+        $partial = $this->getViewTemplate($args);
         if (!$partial) {
             $partial = $player
                 ? 'common/shortcode/player'

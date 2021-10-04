@@ -108,7 +108,7 @@ class Resources extends AbstractShortcode
             'resources' => 'resource',
         ];
 
-        $partial = $this->getThemeTemplet($args) ?? 'common/shortcode/' . $resourceTypeTemplates[$resourceType];
+        $partial = $this->getViewTemplate($args) ?? 'common/shortcode/' . $resourceTypeTemplates[$resourceType];
         return $this->view->partial($partial, [
             'resources' => $resources,
             $resourceTypeVars[$resourceType] => $resources,

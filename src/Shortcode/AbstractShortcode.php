@@ -104,10 +104,10 @@ abstract class AbstractShortcode implements ShortcodeInterface
             : array_map('trim', explode(',', $value));
     }
 
-    protected function getThemeTemplet(array $args): ?string
+    protected function getViewTemplate(array $args): ?string
     {
-        if (isset($args['templet']) && strpos($args['templet'], '.') === false) {
-            $partial = 'common/shortcode/' . $args['templet'];
+        if (isset($args['view']) && strpos($args['view'], '.') === false) {
+            $partial = 'common/shortcode/' . $args['view'];
             return $this->view->resolver($partial) ? $partial : null;
         }
         return null;
