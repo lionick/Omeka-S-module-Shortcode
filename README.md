@@ -12,10 +12,11 @@ The shortcodes are well known in Wikipedia (named [wikitext]), [WordPress], [Ome
 and many other cms. The format that is used is the one of WordPress and Omeka Classic,
 like `[shortcode key=value]`. For example, `[media id=51 player=mirador]`
 will render the media #51 in the html code with [Mirador]. Or `[items num=3 is_featured=true sort=random]`
-will display a list of three featured items.
+will display a list of three featured items. A simple link can be `[link 51]` or
+`[link 52 file=original]`.
 
 Shortcodes can be used nearly anywhere in site pages, even in titles. So it is
-possible to set a title with a dynamic data: `[count resource=items query="q=xxx"]`
+possible to set a title with a dynamic data: `[count resource=items query="fulltext_search=xxx"]`
 will display the total of items according to the query.
 
 Furthermore, all core shortcodes of Omeka Classic are integrated and other ones
@@ -73,37 +74,16 @@ The count can be limited by argument `query` or any other generic params: `id`,
 `class`, `class_label`, `template`, `template_label`, `tag`.
 
 When the generic params are present, they override the matching api argument set
-in the query: `[count resource=items query="search=xxx" class=dctype:PhysicalObject]`.
+in the query: `[count resource=items query="resource_class_id=32" class=dctype:PhysicalObject]`.
 Note: the shortcodes arguments are a simplified variant of the keys used in the
 api.
 
 The argument `span=xxx` allows to wrap the result with a `span` with the
 specified value as class.
 
-#### List of resources
-
-- `items`
-- `medias` (with a `s` for multiple medias)
-- `item_sets`
-- `collections` (alias of `item_sets`)
-- `annotations` (with module [Annotate])
-
-  To limit resources, use the same arguments than the shortcode `count`.
-  The resources are listed according to `num`, `sort`, and `order` if any.
-
-- Deprecated shortcode names for compatibility with Omeka classic:
-  - `recent_items`
-    Shortcut to `[items num=5 sort=created order=desc]`.
-  - `featured_items`
-    Shortcut to `[items num=1 is_featured=true sort=random]`.
-  - `recent_collections`
-    Shortcut to `[items num=5 sort=created order=desc]`.
-  - `featured_collections`
-    Shortcut to `[items num=1 is_featured=true sort=random]`.
-
 #### Single resource
 
-##### As block
+The following shortcodes can be use to display a single resource:
 
 - `resource`
 - `item`
@@ -112,8 +92,29 @@ specified value as class.
 - `collection` (alias of `item_set`)
 - `annotation` (with module [Annotate])
 
-  Display a single resource. The argument `id` is required to get it. Other
-  arguments are sent to the partial.
+It displays a single resource. The internal id is required to get it. Example: `[item id=51]`.
+The name of the argument `id` can be omitted: `[item 51]`. The numeric id should
+be the first argument without key. Other arguments are sent to the partial.
+
+The template is the name of the resource by default.
+
+##### As block
+
+By default, a single resource is displayed as a block, similar to the site page
+showcase.
+
+##### As link
+
+Use the view template `link` to display the resource as a link: `[item 51 view=link]`.
+You can use the shortcode for it `[link 51]` in that case too (see below).
+
+Note that for media, this is the link to the resource page, not to the file. Use
+argument `file=original` or `file=large`, etc. to get it (see below).
+
+##### As url
+
+If you just need the url, use the view template `url` to display the resource as
+a simple url: `[item id=51 view=url]`, or simply `[item 51 url]`.
 
 ##### Through a player
 
@@ -140,9 +141,51 @@ For media, there are specific options for the default renderer:
   - `file`
     Shortcut to `[media player=default]`.
 
+#### Resource link or url
+
+The shortcode `link` can be used to display a link to the resource page: `[link 51]`.
+
+To set the title, use argument `title`, else it will use the default title of
+the resource: `[link 51 title="Title of the resource"]`. To use the url as title,
+skip the title: use `[link 51 title=]`.
+
+To get only the url, use the view `url`: `[link 51 view=url]`, or simply `[link 51 url]`.
+Note that it is no more a link: use `[link 51 title=]` to get the link.
+
+The argument `span` allow to wrap the link or url with a specific class.
+
+_Warning_: This is the link to the resource page, even for media. To get the
+link or url to the media file, use `[link 51 file=original]`, where file can be
+any of the thumbnail types.
+
+#### List of resources
+
+The following shortcodes can be use to list resources:
+
+- `items`
+- `medias` (with a `s` for multiple medias)
+- `item_sets`
+- `collections` (alias of `item_sets`)
+- `annotations` (with module [Annotate])
+
+  To limit resources, use the same arguments than the shortcode `count`.
+  The resources are listed according to `num`, `sort`, and `order` if any.
+
+- Deprecated shortcode names for compatibility with Omeka classic:
+  - `recent_items`
+    Shortcut to `[items num=5 sort=created order=desc]`.
+  - `featured_items`
+    Shortcut to `[items num=1 is_featured=true sort=random]`.
+  - `recent_collections`
+    Shortcut to `[items num=5 sort=created order=desc]`.
+  - `featured_collections`
+    Shortcut to `[items num=1 is_featured=true sort=random]`.
+
 ### Generic arguments
 
 Some generic arguments are used in many shortcodes, so they are gathered here.
+
+(If the table is not readable, go to the original page of the module [Shortcode]).
 
 | Argument name     | Purpose                                                           | Argument value                | Example                                               |
 | ----------------- | ----------------------------------------------------------------- | ----------------------------- | ----------------------------------------------------- |
@@ -167,7 +210,7 @@ Some generic arguments are used in many shortcodes, so they are gathered here.
 | `num`             | Number of resources returned. "0" means unlimited. Default: 10.   | Integer                       | `[featured_items num=4]`                              |
 | `sort`            | Property term or specific api value to sort the resource by.      | Property term or some strings | `[items sort=dcterms:date]`, `[items sort=created]`   |
 | `order`           | Order of the sorting                                              | `a`, `d`, `asc`, or `desc`    | `[items sort=dcterms:title order=asc]`                |
-| `templet`         | Specify a special theme template for some shortcodes              | String                        | `[items templet=items]`                               |
+| `view`            | Specify a special theme template for specific rendering           | String                        | `[items view=items]`                                  |
 
 The arguments marked with a `*` require the module [Advanced Search].
 
@@ -186,9 +229,11 @@ The sort specific strings are the one used by the api, like `created`, `modified
 The current site is automatically added. To get results for all sites, use an
 empty string: `[items site=]`
 
-The partial template set with `templet` should be available under `common/shortcode/`.
+The partial template set with `view` should be available under `common/shortcode/`.
 For security, the name must not contain a dot. If the template is missing, the
-default one is used.
+default one is used. Some shortcodes doesn't use a template by default (`count`,
+`link`) and you can use argument `span` to wrap it with a class if you don't
+need a full template. The templates `link` and `url` are fake templates.
 
 Take care of copy-pasting: often, span and attributes are inserted automatically.
 You may need to check the source code of an html text area when an issue occurs.
@@ -268,20 +313,20 @@ since 2008 (version 2.5). The same is used [in Omeka Classic] since 2014
 (version 2.2) too, and it can be found in older various places.
 
 
-[Shortcode]: https://github.com/Daniel-KM/Omeka-S-module-Shortcode
+[Shortcode]: https://gitlab.com/Daniel-KM/Omeka-S-module-Shortcode
 [Omeka S]: https://omeka.org/s
 [wikitext]: https://en.wikipedia.org/wiki/Help:Wikitext#Links_and_URLs
 [WordPress]: https://wordpress.com/support/shortcodes/
 [Omeka Classic]: https://omeka.org/classic/docs/Content/Shortcodes/
 [Installing a module]: http://dev.omeka.org/docs/s/user-manual/modules/#installing-modules
-[Advanced Search]: https://github.com/Daniel-KM/Omeka-S-module-AdvancedSearch
-[Annotate]: https://github.com/Daniel-KM/Omeka-S-module-Annotate
-[LightGallery]: https://github.com/Daniel-KM/Omeka-S-module-LightGallery
-[Mirador]: https://github.com/Daniel-KM/Omeka-S-module-Mirador
-[UniversalViewer]: https://github.com/Daniel-KM/Omeka-S-module-UniversalViewer
-[Diva]: https://github.com/Daniel-KM/Omeka-S-module-Diva
-[ViewerJs]: https://github.com/Daniel-KM/Omeka-S-module-ViewerJs
-[Verovio]: https://github.com/Daniel-KM/Omeka-S-module-Verovio
+[Advanced Search]: https://gitlab.com/Daniel-KM/Omeka-S-module-AdvancedSearch
+[Annotate]: https://gitlab.com/Daniel-KM/Omeka-S-module-Annotate
+[LightGallery]: https://gitlab.com/Daniel-KM/Omeka-S-module-LightGallery
+[Mirador]: https://gitlab.com/Daniel-KM/Omeka-S-module-Mirador
+[UniversalViewer]: https://gitlab.com/Daniel-KM/Omeka-S-module-UniversalViewer
+[Diva]: https://gitlab.com/Daniel-KM/Omeka-S-module-Diva
+[ViewerJs]: https://gitlab.com/Daniel-KM/Omeka-S-module-ViewerJs
+[Verovio]: https://gitlab.com/Daniel-KM/Omeka-S-module-Verovio
 [module issues]: https://gitlab.com/Daniel-KM/Omeka-S-module-Shortcode/issues
 [CeCILL v2.1]: https://www.cecill.info/licences/Licence_CeCILL_V2.1-en.html
 [GNU/GPL]: https://www.gnu.org/licenses/gpl-3.0.html
