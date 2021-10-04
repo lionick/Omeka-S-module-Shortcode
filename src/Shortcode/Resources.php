@@ -39,7 +39,7 @@ class Resources extends AbstractShortcode
             'recent_resources' => 'items',
         ];
 
-        $resourceType = $shortcodeToResources[$this->shortcodeName];
+        $resourceName = $shortcodeToResources[$this->shortcodeName];
 
         // Manage shortcuts from Omeka Classic.
         $recents = [
@@ -84,23 +84,9 @@ class Resources extends AbstractShortcode
 
         $query = $this->apiQuery($args);
 
-        $resources = $this->view->api()->search($resourceType, $query)->getContent();
+        $resources = $this->view->api()->search($resourceName, $query)->getContent();
 
-        $resourceTypeTemplates = [
-            'annotations' => 'annotations',
-            'items' => 'items',
-            'item_sets' => 'item-sets',
-            'media' => 'medias',
-            'resources' => 'resources',
-        ];
-        $resourceTypeVars = [
-            'annotations' => 'annotations',
-            'items' => 'items',
-            'item_sets' => 'itemSets',
-            'media' => 'medias',
-            'resources' => 'resources',
-        ];
-        $resourceTypesCss = [
+        $resourceTemplates = [
             'annotations' => 'annotation',
             'items' => 'item',
             'item_sets' => 'item-set',
@@ -108,11 +94,13 @@ class Resources extends AbstractShortcode
             'resources' => 'resource',
         ];
 
-        $partial = $this->getViewTemplate($args) ?? 'common/shortcode/' . $resourceTypeTemplates[$resourceType];
+        $partial = $this->getViewTemplate($args) ?? 'common/shortcode/' . $resourceTemplates[$resourceName];
         return $this->view->partial($partial, [
             'resources' => $resources,
-            $resourceTypeVars[$resourceType] => $resources,
-            'resourceType' => $resourceTypesCss[$resourceType],
+            $this->resourceVars[$resourceName] => $resources,
+            'resourceName' => $resourceName,
+            'resourceType' => $this->resourceTypes[$resourceName],
+            'options' => $args,
         ]);
     }
 }

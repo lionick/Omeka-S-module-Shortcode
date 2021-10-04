@@ -16,6 +16,42 @@ abstract class AbstractShortcode implements ShortcodeInterface
      */
     protected $view;
 
+    /**
+     * @var array
+     */
+    protected $resourceNames = [
+        'item' => 'items',
+        'items' => 'items',
+        'item_set' => 'item_sets',
+        'item_sets' => 'item_sets',
+        'media' => 'media',
+        'medias' => 'media',
+        'resource' => 'resources',
+        'resources' => 'resources',
+    ];
+
+    /**
+     * @var array
+     */
+    protected $resourceVars = [
+        'annotations' => 'annotations',
+        'items' => 'items',
+        'item_sets' => 'itemSets',
+        'media' => 'medias',
+        'resources' => 'resources',
+    ];
+
+    /**
+     * @var array
+     */
+    protected $resourceTypes = [
+        'annotations' => 'annotation',
+        'items' => 'item',
+        'item_sets' => 'item-set',
+        'media' => 'media',
+        'resources' => 'resource',
+    ];
+
     public function setShortcodeName(string $shortcodeName ): ShortcodeInterface
     {
         $this->shortcodeName = $shortcodeName;

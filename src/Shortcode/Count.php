@@ -12,23 +12,15 @@ class Count extends AbstractShortcode
      */
     public function render(?array $args = null): string
     {
-        $resourceNames = [
-            'item' => 'items',
-            'items' => 'items',
-            'item_set' => 'item_sets',
-            'item_sets' => 'item_sets',
-            'media' => 'media',
-            'medias' => 'media',
-            // TODO Support count of "resources".
-            // 'resource' => 'resources',
-            // 'resources' => 'resources',
-        ];
-
         $span = empty($args['span']) ? false : $this->view->escapeHtmlAttr($args['span']);
 
         $partial = $this->getViewTemplate($args);
 
-        if (empty($args['resource']) || !isset($resourceNames[$args['resource']])) {
+        if (empty($args['resource'])
+            || !isset($this->resourceNames[$args['resource']])
+            // TODO Support count of "resources".
+            || $this->resourceNames[$args['resource']] === 'resources::'
+        ) {
             if ($partial) {
                 return $this->view->partial($partial, [
                     'resourceType' => null,
@@ -41,15 +33,7 @@ class Count extends AbstractShortcode
                 : '0';
         }
 
-        $resourceTypes = [
-            'annotations' => 'annotation',
-            'items' => 'item',
-            'item_sets' => 'item-set',
-            'media' => 'media',
-            'resources' => 'resource',
-        ];
-
-        $resourceName = $resourceNames[$args['resource']];
+        $resourceName = $this->resourceNames[$args['resource']];
 
         $query = $this->apiQuery($args);
 
@@ -67,7 +51,7 @@ class Count extends AbstractShortcode
         if ($partial) {
             return $this->view->partial($partial, [
                 'resourceName' => $resourceName,
-                'resourceType' => $resourceTypes[$resourceName],
+                'resourceType' => $this->resourceTypes[$resourceName],
                 'count' => 0,
                 'options' => $args,
             ]);

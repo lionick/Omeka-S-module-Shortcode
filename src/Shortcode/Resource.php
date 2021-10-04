@@ -31,12 +31,12 @@ class Resource extends AbstractShortcode
             return '';
         }
 
-        $resourceType = $resource->resourceName();
+        $resourceName = $resource->resourceName();
 
         // Compatibility with Omeka Classic.
         if ($this->shortcodeName === 'file') {
             // A file is only a media.
-            if ($resourceType !== 'media') {
+            if ($resourceName !== 'media') {
                 return '';
             }
             if (!isset($args['player'])) {
@@ -48,7 +48,7 @@ class Resource extends AbstractShortcode
         if (isset($args['player'])) {
             $args['player'] = lcfirst($args['player']);
             if ($args['player'] === 'default') {
-                return $resourceType === 'media'
+                return $resourceName === 'media'
                     ? $this->renderMedia($resource, $args)
                     : '';
             }
@@ -59,21 +59,7 @@ class Resource extends AbstractShortcode
             }
         }
 
-        $resourceTypeTemplates = [
-            'annotations' => 'annotation',
-            'items' => 'item',
-            'item_sets' => 'item-set',
-            'media' => 'media',
-            'resources' => 'resource',
-        ];
-        $resourceTypeVars = [
-            'annotations' => 'annotations',
-            'items' => 'items',
-            'item_sets' => 'itemSets',
-            'media' => 'medias',
-            'resources' => 'resources',
-        ];
-        $resourceTypesCss = [
+        $resourceTemplates = [
             'annotations' => 'annotation',
             'items' => 'item',
             'item_sets' => 'item-set',
@@ -85,13 +71,14 @@ class Resource extends AbstractShortcode
         if (!$partial) {
             $partial = $player
                 ? 'common/shortcode/player'
-                : 'common/shortcode/' . $resourceTypeTemplates[$resourceType];
+                : 'common/shortcode/' . $resourceTemplates[$resourceName];
         }
 
         return $this->view->partial($partial, [
             'resource' => $resource,
-            $resourceTypeVars[$resourceType] => $resource,
-            'resourceType' => $resourceTypesCss[$resourceType],
+            $this->resourceVars[$resourceName] => $resource,
+            'resourceName' => $resourceName,
+            'resourceType' => $this->resourceTypes[$resourceName],
             'options' => $args,
             'player' => $player,
         ]);
