@@ -32,6 +32,8 @@ class Resource extends AbstractShortcode
             return '';
         }
 
+        // The views "url" and "link" don't use any template and they can use a
+        // short argument.
         $argsValueIsUrl = array_keys($args, 'url', true);
         $viewAsUrl = in_array('view', $argsValueIsUrl)
             || array_filter($argsValueIsUrl, 'is_numeric');
@@ -39,6 +41,12 @@ class Resource extends AbstractShortcode
             return $this->renderUrl($resource, $args);
         }
 
+        $argsValueIsLink = array_keys($args, 'link', true);
+        $viewAsLink = in_array('view', $argsValueIsLink)
+            || array_filter($argsValueIsLink, 'is_numeric');
+        if ($viewAsLink) {
+            return $this->renderLink($resource, $args);
+        }
         $resourceName = $resource->resourceName();
 
         // Compatibility with Omeka Classic.
@@ -92,16 +100,20 @@ class Resource extends AbstractShortcode
         ]);
     }
 
-    protected function renderUrl(AbstractResourceEntityRepresentation $resource, array $args): string
+    protected function urlResource(AbstractResourceEntityRepresentation $resource, array $args): ?string
     {
         if ($resource instanceof MediaRepresentation && isset($args['file'])) {
             // TODO Use $resource->thumbnailDisplayUrl($type) (but not use often when we want file).
-            $resourceUrl = $args['file'] === 'original'
+            return $args['file'] === 'original'
                 ? $resource->originalUrl()
                 : $resource->thumbnailUrl($args['file']);
-        } else {
-            $resourceUrl = $resource->url(null, true);
         }
+        return $resource->url(null, true);
+    }
+
+    protected function renderUrl(AbstractResourceEntityRepresentation $resource, array $args): string
+    {
+        $resourceUrl = $this->urlResource($resource, $args);
         if (!$resourceUrl) {
             return '';
         }
@@ -109,6 +121,33 @@ class Resource extends AbstractShortcode
         return $span
             ? '<span class="' . $span . '">' . $resourceUrl . '</span>'
             : $resourceUrl;
+    }
+
+    protected function renderLink(AbstractResourceEntityRepresentation$resource, array $args): string
+    {
+        $resourceUrl = $this->urlResource($resource, $args);
+        if (!$resourceUrl) {
+            return '';
+        }
+
+        $plugins = $this->view->getHelperPluginManager();
+        $escape = $plugins->get('escapeHtml');
+        $hyperlink = $plugins->get('hyperlink');
+
+        $displayTitle = $resource->displayTitle();
+
+        if (array_key_exists('title', $args)) {
+            $title = strlen($args['title']) ? $args['title'] : $resourceUrl;
+        } else {
+            $title = $displayTitle;
+        }
+
+        $link = $hyperlink->raw($escape($title), $resourceUrl, ['title' => $displayTitle]);
+
+        $span = empty($args['span']) ? false : $escape($args['span']);
+        return $span
+            ? '<span class="' . $span . '">' . $link . '</span>'
+            : $link;
     }
 
     protected function renderMedia(MediaRepresentation $resource, array $args): string
