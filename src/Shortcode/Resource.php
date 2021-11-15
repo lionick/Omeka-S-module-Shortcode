@@ -146,7 +146,17 @@ class Resource extends AbstractShortcode
             $title = $displayTitle;
         }
 
-        $link = $hyperlink->raw($escape($title), $resourceUrl, ['title' => $displayTitle]);
+        $attributes = [
+            'title' => $displayTitle,
+        ];
+
+        if ($resource instanceof MediaRepresentation && isset($args['file'])) {
+            $attributes['type'] = $args['file'] === 'original'
+                ? $resource->mediaType()
+                : 'image/jpeg';
+        }
+
+        $link = $hyperlink->raw($escape($title), $resourceUrl, $attributes);
 
         $span = empty($args['span']) ? false : $escape($args['span']);
         return $span
