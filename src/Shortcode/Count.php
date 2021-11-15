@@ -43,7 +43,7 @@ class Count extends AbstractShortcode
             $query['offset'],
             $query['limit'],
             $query['sort_by'],
-            $query['sort_order'],
+            $query['sort_order']
         );
 
         $total = (string) $this->view->api()->search($resourceName, $query)->getTotalResults();
