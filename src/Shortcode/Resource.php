@@ -41,6 +41,10 @@ class Resource extends AbstractShortcode
             return $this->renderUrl($resource, $args);
         }
 
+        if ($this->shortcodeName === 'link') {
+            return $this->renderLink($resource, $args);
+        }
+
         $argsValueIsLink = array_keys($args, 'link', true);
         $viewAsLink = in_array('view', $argsValueIsLink)
             || array_filter($argsValueIsLink, 'is_numeric');

@@ -23,7 +23,7 @@ return [
             'noop' => Shortcode\Noop::class,
 
             'count' => Shortcode\Count::class,
-            'link' => Shortcode\Link::class,
+            'link' => Shortcode\Resource::class,
 
             'annotation' => Shortcode\Resource::class,
             'collection' => Shortcode\Resource::class,
