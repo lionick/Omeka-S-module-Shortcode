@@ -154,7 +154,7 @@ class Shortcodes extends AbstractHelper
             }
         } else {
             $args = [
-                ltrim($attributes)
+                ltrim($attributes),
             ];
         }
 

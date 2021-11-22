@@ -52,7 +52,7 @@ abstract class AbstractShortcode implements ShortcodeInterface
         'resources' => 'resource',
     ];
 
-    public function setShortcodeName(string $shortcodeName ): ShortcodeInterface
+    public function setShortcodeName(string $shortcodeName): ShortcodeInterface
     {
         $this->shortcodeName = $shortcodeName;
         return $this;
@@ -71,10 +71,10 @@ abstract class AbstractShortcode implements ShortcodeInterface
      *
      * For api, it is recommended to use boolean().
      */
-     protected function bool(string $value): bool
-     {
-         return !in_array(strtolower($value), ['0', 'false'], true);
-     }
+    protected function bool(string $value): bool
+    {
+        return !in_array(strtolower($value), ['0', 'false'], true);
+    }
 
     /**
      * Check if a value is a boolean and return "0" or "1".
