@@ -87,11 +87,11 @@ class Resources extends AbstractShortcode
         $resources = $this->view->api()->search($resourceName, $query)->getContent();
 
         $resourceTemplates = [
-            'annotations' => 'annotation',
-            'items' => 'item',
-            'item_sets' => 'item-set',
-            'media' => 'media',
-            'resources' => 'resource',
+            'annotations' => 'annotations',
+            'items' => 'items',
+            'item_sets' => 'item-sets',
+            'media' => 'medias',
+            'resources' => 'resources',
         ];
 
         $partial = $this->getViewTemplate($args) ?? 'common/shortcode/' . $resourceTemplates[$resourceName];
