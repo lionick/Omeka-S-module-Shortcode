@@ -19,7 +19,7 @@ class Count extends AbstractShortcode
         if (empty($args['resource'])
             || !isset($this->resourceNames[$args['resource']])
             // TODO Support count of "resources".
-            || $this->resourceNames[$args['resource']] === 'resources::'
+            || $this->resourceNames[$args['resource']] === 'resources'
         ) {
             if ($partial) {
                 return $this->view->partial($partial, [
