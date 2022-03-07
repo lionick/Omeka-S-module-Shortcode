@@ -17,8 +17,8 @@ $thumbnail = $plugins->get('thumbnail');
 <div class="shortcode <? $resourceType ?> resources">
     <ul class="resource-list preview">
         <?php foreach ($resources as $resource): ?>
-        <?php $title = $resource->displayTitle(); ?>
-        <?php $description = $resource->displayDescription(); ?>
+        <?php $title = $resource->title(); ?>
+        <?php $description = $resource->summary(); ?>
         <li class="<? $resourceType?> resource">
             <?php $thumb = $thumbnail($resource, 'medium', ['title' => $title]); ?>
             <?= $resource->linkRaw($thumb) ?>

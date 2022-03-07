@@ -1,7 +1,7 @@
 <?php
 /**
  * @var \Laminas\View\Renderer\PhpRenderer $this
- * @var \Omeka\Api\Representation\AbstractResourceEntityRepresentation $resource
+ * @var \Omeka\Api\Representation\SiteRepresentation $resource
  * @var string $resourceName
  * @var string $resourceType
  * @var array $options
@@ -13,8 +13,8 @@ $plugins = $this->getHelperPluginManager();
 $escape = $plugins->get('escapeHtml');
 $thumbnail = $plugins->get('thumbnail');
 
-$title = $resource->displayTitle();
-$description = $resource->displayDescription();
+$title = $resource->title();
+$description = $resource->summary();
 ?>
 
 <div class="shortcode <?= $resourceType ?> resource">

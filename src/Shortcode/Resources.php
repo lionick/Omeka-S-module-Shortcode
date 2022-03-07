@@ -20,7 +20,10 @@ class Resources extends AbstractShortcode
             'item_sets' => 'item_sets',
             'media' => 'media',
             'medias' => 'media',
+            'pages' => 'site_pages',
             'resources' => 'items',
+            'site_pages' => 'site_pages',
+            'sites' => 'sites',
 
             'featured_annotations' => 'annotations',
             'featured_collections' => 'item_sets',
@@ -39,7 +42,10 @@ class Resources extends AbstractShortcode
             'recent_resources' => 'items',
         ];
 
-        $resourceName = $shortcodeToResources[$this->shortcodeName];
+        $resourceName = $shortcodeToResources[$this->shortcodeName] ?? null;
+        if (!$resourceName) {
+            return '';
+        }
 
         // Manage shortcuts from Omeka Classic.
         $recents = [
@@ -92,6 +98,8 @@ class Resources extends AbstractShortcode
             'item_sets' => 'item-sets',
             'media' => 'medias',
             'resources' => 'resources',
+            'site_pages' => 'pages',
+            'sites' => 'sites',
         ];
 
         $partial = $this->getViewTemplate($args) ?? 'common/shortcode/' . $resourceTemplates[$resourceName];

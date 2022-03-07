@@ -30,7 +30,9 @@ return [
             'item' => Shortcode\Resource::class,
             'item_set' => Shortcode\Resource::class,
             'media' => Shortcode\Resource::class,
+            'page' => Shortcode\Resource::class,
             'resource' => Shortcode\Resource::class,
+            'site' => Shortcode\Resource::class,
 
             'annotations' => Shortcode\Resources::class,
             'collections' => Shortcode\Resources::class,
@@ -39,6 +41,8 @@ return [
             'medias' => Shortcode\Resources::class,
             // TODO Support "resources".
             // 'resources' => Shortcode\Resources::class,
+            'site_pages' => Shortcode\Resources::class,
+            'sites' => Shortcode\Resources::class,
 
             // Deprecated aliases for compatibility with Omeka Classic.
             'file' => Shortcode\Resource::class,

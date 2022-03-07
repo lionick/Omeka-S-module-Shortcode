@@ -20,6 +20,8 @@ abstract class AbstractShortcode implements ShortcodeInterface
      * @var array
      */
     protected $resourceNames = [
+        'annotation' => 'annotations',
+        'annotations' => 'annotations',
         'item' => 'items',
         'items' => 'items',
         'item_set' => 'item_sets',
@@ -28,6 +30,16 @@ abstract class AbstractShortcode implements ShortcodeInterface
         'medias' => 'media',
         'resource' => 'resources',
         'resources' => 'resources',
+        'site_pages' => 'site_pages',
+        'site' => 'sites',
+        'sites' => 'sites',
+        'value_annotation' => 'value_annotations',
+        'value_annotations' => 'value_annotations',
+        // Aliases.
+        'collection' => 'item_sets',
+        'collections' => 'item_sets',
+        'page' => 'site_pages',
+        'pages' => 'site_pages',
     ];
 
     /**
@@ -39,6 +51,9 @@ abstract class AbstractShortcode implements ShortcodeInterface
         'item_sets' => 'itemSets',
         'media' => 'medias',
         'resources' => 'resources',
+        'site_pages' => 'site_pages',
+        'sites' => 'sites',
+        'value_annotations' => 'value_annotations',
     ];
 
     /**
@@ -50,6 +65,9 @@ abstract class AbstractShortcode implements ShortcodeInterface
         'item_sets' => 'item-set',
         'media' => 'media',
         'resources' => 'resource',
+        'site_pages' => 'page',
+        'sites' => 'site',
+        'value_annotations' => 'value_annotation',
     ];
 
     public function setShortcodeName(string $shortcodeName): ShortcodeInterface
@@ -153,16 +171,11 @@ abstract class AbstractShortcode implements ShortcodeInterface
     {
         static $siteId;
         if (is_null($siteId)) {
-            $vars = $this->view->vars();
-            $site = $vars->offsetGet('site');
-            if (!$site) {
-                $site = $this->view
-                    ->getHelperPluginManager()
-                    ->get('Laminas\View\Helper\ViewModel')
-                    ->getRoot()
-                    ->getVariable('site');
-                $vars->offsetSet('site', $site);
-            }
+            $site = $this->view->site ?? $this->view->site = $this->view
+                ->getHelperPluginManager()
+                ->get('Laminas\View\Helper\ViewModel')
+                ->getRoot()
+                ->getVariable('site');
             $siteId = $site ? $site->id() : 0;
         }
         return $siteId ?: null;

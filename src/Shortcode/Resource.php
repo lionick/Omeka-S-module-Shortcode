@@ -16,20 +16,42 @@ class Resource extends AbstractShortcode
      */
     public function render(array $args = []): string
     {
+        // The shortcode name can be a shortcode too, like "link".
+        // The resource name is required for resources without method "resourceName()".
+        $resourceNameFromShortcode = $this->resourceNames[$this->shortcodeName] ?? $this->shortcodeName;
+
         if (empty($args['id'])) {
             // Check if there is a numeric argument.
-            if (empty($args[0]) || !(int) $args[0]) {
+            if (empty($args[0])) {
                 return '';
+            }
+            if (!(int) $args[0]) {
+                // May be a page or a site.
+                if (!in_array($resourceNameFromShortcode, ['site_pages', 'sites'])) {
+                    return '';
+                }
             }
             $args['id'] = $args[0];
             unset($args[0]);
         }
 
-        try {
-            /** @var \Omeka\Api\Representation\AbstractResourceEntityRepresentation $resource */
-            $resource = $this->view->api()->read('resources', ['id' => $args['id']])->getContent();
-        } catch (NotFoundException $e) {
-            return '';
+        if ($resourceNameFromShortcode === 'site_pages' || $resourceNameFromShortcode === 'sites') {
+            try {
+                $queryResource = is_numeric($args['id'])
+                    ? ['id' => $args['id']]
+                    : ['slug' => $args['id']];
+                /** @var \Omeka\Api\Representation\AbstractResourceEntityRepresentation $resource */
+                $resource = $this->view->api()->read($resourceNameFromShortcode, $queryResource)->getContent();
+            } catch (NotFoundException $e) {
+                return '';
+            }
+        } else {
+            try {
+                /** @var \Omeka\Api\Representation\AbstractResourceEntityRepresentation $resource */
+                $resource = $this->view->api()->read('resources', ['id' => $args['id']])->getContent();
+            } catch (NotFoundException $e) {
+                return '';
+            }
         }
 
         // The views "url" and "link" don't use any template and they can use a
@@ -51,7 +73,9 @@ class Resource extends AbstractShortcode
         if ($viewAsLink) {
             return $this->renderLink($resource, $args);
         }
-        $resourceName = $resource->resourceName();
+        $resourceName = method_exists($resource, 'resourceName')
+            ? $resource->resourceName()
+            : $resourceNameFromShortcode;
 
         // Compatibility with Omeka Classic.
         if ($this->shortcodeName === 'file') {
@@ -85,6 +109,8 @@ class Resource extends AbstractShortcode
             'item_sets' => 'item-set',
             'media' => 'media',
             'resources' => 'resource',
+            'site_pages' => 'page',
+            'sites' => 'site',
         ];
 
         $partial = $this->getViewTemplate($args);
@@ -138,7 +164,9 @@ class Resource extends AbstractShortcode
         $escape = $plugins->get('escapeHtml');
         $hyperlink = $plugins->get('hyperlink');
 
-        $displayTitle = $resource->displayTitle();
+        $displayTitle = method_exists($resource, 'displayTitle')
+            ? $resource->displayTitle()
+            : $resource->title();
 
         if (array_key_exists('title', $args)) {
             $title = strlen($args['title']) ? $args['title'] : $resourceUrl;
