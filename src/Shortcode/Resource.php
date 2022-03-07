@@ -103,6 +103,21 @@ class Resource extends AbstractShortcode
             }
         }
 
+        // For shortcode and compatibility with Omeka classic.
+        if (array_key_exists('created', $args)) {
+            $args['field'] = 'created';
+        } elseif (array_key_exists('modified', $args)) {
+            $args['field'] = 'modified';
+        } elseif (array_key_exists('added', $args)) {
+            $args['field'] = 'added';
+        } elseif (array_key_exists('updated', $args)) {
+            $args['field'] = 'updated';
+        }
+
+        if (isset($args['field'])) {
+            return $this->renderField($resource, $args);
+        }
+
         $resourceTemplates = [
             'annotations' => 'annotation',
             'items' => 'item',
@@ -163,6 +178,7 @@ class Resource extends AbstractShortcode
         $plugins = $this->view->getHelperPluginManager();
         $escape = $plugins->get('escapeHtml');
         $hyperlink = $plugins->get('hyperlink');
+        $escapeAttr = $plugins->get('escapeHtmlAttr');
 
         $displayTitle = method_exists($resource, 'displayTitle')
             ? $resource->displayTitle()
@@ -186,7 +202,7 @@ class Resource extends AbstractShortcode
 
         $link = $hyperlink->raw($escape($title), $resourceUrl, $attributes);
 
-        $span = empty($args['span']) ? false : $escape($args['span']);
+        $span = empty($args['span']) ? false : $escapeAttr($args['span']);
         return $span
             ? '<span class="' . $span . '">' . $link . '</span>'
             : $link;

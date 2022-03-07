@@ -3,6 +3,7 @@
 namespace Shortcode\Shortcode;
 
 use Laminas\View\Renderer\PhpRenderer;
+use Omeka\Api\Representation\AbstractEntityRepresentation;
 
 abstract class AbstractShortcode implements ShortcodeInterface
 {
@@ -83,6 +84,90 @@ abstract class AbstractShortcode implements ShortcodeInterface
     }
 
     abstract public function render(array $args = []): string;
+
+    protected function renderField(AbstractEntityRepresentation $resource, array $args = []): string
+    {
+        if (empty($args['field'])) {
+            return '';
+        }
+
+        $field = $args['field'];
+
+        if (!strpos($field, ':') && strpos($field, '@') === false) {
+            $field = 'o:' . $field;
+        }
+
+        $jsonLd = $resource->getJsonLd();
+        if (!isset($jsonLd[$field])) {
+            // For compatibility with Omeka Classic.
+            if ($field === 'o:added' && isset($jsonLd['o:created'])) {
+                $field = 'o:created';
+            } elseif ($field === 'o:updated' && isset($jsonLd['o:modified'])) {
+                $field = 'o:modified';
+            }
+            // Fix a common issue.
+            elseif ($field === 'o:description'
+                && $resource instanceof \Omeka\Api\Representation\SiteRepresentation
+            ) {
+                $field = 'o:summary';
+            } else {
+                return '';
+            }
+        }
+
+        $plugins = $this->view->getHelperPluginManager();
+        $escape = $plugins->get('escapeHtml');
+        $escapeAttr = $plugins->get('escapeHtmlAttr');
+        $span = empty($args['span']) ? false : $escapeAttr($args['span']);
+
+        $meta = $jsonLd[$field];
+
+        if (is_array($meta)) {
+            $meta = $meta['@value'] ?? reset($meta);
+        }
+
+        if (is_null($meta) || $meta === '') {
+            return '';
+        }
+
+        if (is_scalar($meta)) {
+            return $span
+                ? '<span class="' . $span . '">' . $escape($meta) . '</span>'
+                : $escape($meta);
+        }
+
+        // JsonLd() is a list of objects, unlike json_decode().
+        if (!is_object($meta)) {
+            return '';
+        }
+
+        if (method_exists($meta, 'asHtml')) {
+            $meta = (string) $meta->asHtml();
+            return $span
+                ? '<span class="' . $span . '">' . $meta . '</span>'
+                : $meta;
+        }
+
+        if (method_exists($meta, '__toString')) {
+            $meta = (string) $meta;
+        } elseif ($meta instanceof \Omeka\Stdlib\DateTime) {
+            $meta = $this->view->i18n()->dateFormat($meta->getDateTime(), $args['date'] ?? null, $args['time'] ?? null);
+        } elseif ($meta instanceof \DateTime) {
+            $meta = $this->view->i18n()->dateFormat($meta, $args['date'] ?? null, $args['time'] ?? null);
+        } elseif (method_exists($meta, 'displayTitle')) {
+            $meta = $meta->displayTitle();
+        } elseif (method_exists($meta, 'title')) {
+            $meta = $meta->title();
+        } elseif (method_exists($meta, 'label')) {
+            $meta = $meta->label();
+        } else {
+            return '';
+        }
+
+        return $span
+            ? '<span class="' . $span . '">' . $escape($meta) . '</span>'
+            : $escape($meta);
+    }
 
     /**
      * Check if a value is a boolean.
