@@ -23,7 +23,20 @@ class Resource extends AbstractShortcode
         if (empty($args['id'])) {
             // Check if there is a numeric argument.
             if (empty($args[0])) {
-                return '';
+                // Use current page or site.
+                if ($resourceNameFromShortcode === 'site_pages') {
+                    $args[0] = $this->view->params()->fromRoute('page-slug');
+                    if (!$args[0]) {
+                        return '';
+                    }
+                } elseif ($resourceNameFromShortcode === 'sites') {
+                    $args[0] = $this->currentSiteId();
+                    if (!$args[0]) {
+                        return '';
+                    }
+                } else {
+                    return '';
+                }
             }
             if (!(int) $args[0]) {
                 // May be a page or a site.
@@ -35,13 +48,26 @@ class Resource extends AbstractShortcode
             unset($args[0]);
         }
 
-        if ($resourceNameFromShortcode === 'site_pages' || $resourceNameFromShortcode === 'sites') {
+        if ($resourceNameFromShortcode === 'site_pages') {
+            try {
+                if (empty($args['site'])) {
+                    $args['site'] = $this->currentSiteId();
+                }
+                $queryResource = is_numeric($args['id'])
+                    ? ['site' => $args['site'], 'id' => $args['id']]
+                    : ['site' => $args['site'], 'slug' => $args['id']];
+                /** @var \Omeka\Api\Representation\SitePageRepresentation $resource */
+                $resource = $this->view->api()->read('site_pages', $queryResource)->getContent();
+            } catch (NotFoundException $e) {
+                return '';
+            }
+        } elseif ($resourceNameFromShortcode === 'sites') {
             try {
                 $queryResource = is_numeric($args['id'])
                     ? ['id' => $args['id']]
                     : ['slug' => $args['id']];
-                /** @var \Omeka\Api\Representation\AbstractResourceEntityRepresentation $resource */
-                $resource = $this->view->api()->read($resourceNameFromShortcode, $queryResource)->getContent();
+                /** @var \Omeka\Api\Representation\SiteRepresentation $resource */
+                $resource = $this->view->api()->read('sites', $queryResource)->getContent();
             } catch (NotFoundException $e) {
                 return '';
             }
