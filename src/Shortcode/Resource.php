@@ -105,17 +105,17 @@ class Resource extends AbstractShortcode
 
         // For shortcode and compatibility with Omeka classic.
         if (array_key_exists('created', $args)) {
-            $args['field'] = 'created';
+            $args['meta'] = 'created';
         } elseif (array_key_exists('modified', $args)) {
-            $args['field'] = 'modified';
+            $args['meta'] = 'modified';
         } elseif (array_key_exists('added', $args)) {
-            $args['field'] = 'added';
+            $args['meta'] = 'added';
         } elseif (array_key_exists('updated', $args)) {
-            $args['field'] = 'updated';
+            $args['meta'] = 'updated';
         }
 
-        if (isset($args['field'])) {
-            return $this->renderField($resource, $args);
+        if (isset($args['meta'])) {
+            return $this->renderMeta($resource, $args);
         }
 
         $resourceTemplates = [

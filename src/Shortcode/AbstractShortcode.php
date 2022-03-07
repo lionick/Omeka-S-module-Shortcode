@@ -85,31 +85,31 @@ abstract class AbstractShortcode implements ShortcodeInterface
 
     abstract public function render(array $args = []): string;
 
-    protected function renderField(AbstractEntityRepresentation $resource, array $args = []): string
+    protected function renderMeta(AbstractEntityRepresentation $resource, array $args = []): string
     {
-        if (empty($args['field'])) {
+        if (empty($args['meta'])) {
             return '';
         }
 
-        $field = $args['field'];
+        $meta = $args['meta'];
 
-        if (!strpos($field, ':') && strpos($field, '@') === false) {
-            $field = 'o:' . $field;
+        if (!strpos($meta, ':') && strpos($meta, '@') === false) {
+            $meta = 'o:' . $meta;
         }
 
         $jsonLd = $resource->getJsonLd();
-        if (!isset($jsonLd[$field])) {
+        if (!isset($jsonLd[$meta])) {
             // For compatibility with Omeka Classic.
-            if ($field === 'o:added' && isset($jsonLd['o:created'])) {
-                $field = 'o:created';
-            } elseif ($field === 'o:updated' && isset($jsonLd['o:modified'])) {
-                $field = 'o:modified';
+            if ($meta === 'o:added' && isset($jsonLd['o:created'])) {
+                $meta = 'o:created';
+            } elseif ($meta === 'o:updated' && isset($jsonLd['o:modified'])) {
+                $meta = 'o:modified';
             }
             // Fix a common issue.
-            elseif ($field === 'o:description'
+            elseif ($meta === 'o:description'
                 && $resource instanceof \Omeka\Api\Representation\SiteRepresentation
             ) {
-                $field = 'o:summary';
+                $meta = 'o:summary';
             } else {
                 return '';
             }
@@ -120,53 +120,53 @@ abstract class AbstractShortcode implements ShortcodeInterface
         $escapeAttr = $plugins->get('escapeHtmlAttr');
         $span = empty($args['span']) ? false : $escapeAttr($args['span']);
 
-        $meta = $jsonLd[$field];
+        $metadata = $jsonLd[$meta];
 
-        if (is_array($meta)) {
-            $meta = $meta['@value'] ?? reset($meta);
+        if (is_array($metadata)) {
+            $metadata = $metadata['@value'] ?? reset($metadata);
         }
 
-        if (is_null($meta) || $meta === '') {
+        if (is_null($metadata) || $metadata === '') {
             return '';
         }
 
-        if (is_scalar($meta)) {
+        if (is_scalar($metadata)) {
             return $span
-                ? '<span class="' . $span . '">' . $escape($meta) . '</span>'
-                : $escape($meta);
+                ? '<span class="' . $span . '">' . $escape($metadata) . '</span>'
+                : $escape($metadata);
         }
 
         // JsonLd() is a list of objects, unlike json_decode().
-        if (!is_object($meta)) {
+        if (!is_object($metadata)) {
             return '';
         }
 
-        if (method_exists($meta, 'asHtml')) {
-            $meta = (string) $meta->asHtml();
+        if (method_exists($metadata, 'asHtml')) {
+            $metadata = (string) $metadata->asHtml();
             return $span
-                ? '<span class="' . $span . '">' . $meta . '</span>'
-                : $meta;
+                ? '<span class="' . $span . '">' . $metadata . '</span>'
+                : $metadata;
         }
 
-        if (method_exists($meta, '__toString')) {
-            $meta = (string) $meta;
-        } elseif ($meta instanceof \Omeka\Stdlib\DateTime) {
-            $meta = $this->view->i18n()->dateFormat($meta->getDateTime(), $args['date'] ?? null, $args['time'] ?? null);
-        } elseif ($meta instanceof \DateTime) {
-            $meta = $this->view->i18n()->dateFormat($meta, $args['date'] ?? null, $args['time'] ?? null);
-        } elseif (method_exists($meta, 'displayTitle')) {
-            $meta = $meta->displayTitle();
-        } elseif (method_exists($meta, 'title')) {
-            $meta = $meta->title();
-        } elseif (method_exists($meta, 'label')) {
-            $meta = $meta->label();
+        if (method_exists($metadata, '__toString')) {
+            $metadata = (string) $metadata;
+        } elseif ($metadata instanceof \Omeka\Stdlib\DateTime) {
+            $metadata = $this->view->i18n()->dateFormat($metadata->getDateTime(), $args['date'] ?? null, $args['time'] ?? null);
+        } elseif ($metadata instanceof \DateTime) {
+            $metadata = $this->view->i18n()->dateFormat($metadata, $args['date'] ?? null, $args['time'] ?? null);
+        } elseif (method_exists($metadata, 'displayTitle')) {
+            $metadata = $metadata->displayTitle();
+        } elseif (method_exists($metadata, 'title')) {
+            $metadata = $metadata->title();
+        } elseif (method_exists($metadata, 'label')) {
+            $metadata = $metadata->label();
         } else {
             return '';
         }
 
         return $span
-            ? '<span class="' . $span . '">' . $escape($meta) . '</span>'
-            : $escape($meta);
+            ? '<span class="' . $span . '">' . $escape($metadata) . '</span>'
+            : $escape($metadata);
     }
 
     /**
