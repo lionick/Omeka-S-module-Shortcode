@@ -22,3 +22,7 @@ $settings = $services->get('Omeka\Settings');
 if (version_compare($oldVersion, '3.3.1.2', '<')) {
     require_once __DIR__ . '/upgrade_vocabulary.php';
 }
+
+if (version_compare($oldVersion, '3.3.1.5', '<')) {
+    require_once __DIR__ . '/upgrade_vocabulary.php';
+}
