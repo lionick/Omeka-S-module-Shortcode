@@ -13,7 +13,7 @@ and many other cms. The format that is used is the one of WordPress and Omeka Cl
 like `[shortcode key=value]`. For example, `[media id=51 player=mirador]`
 will render the media #51 in the html code with [Mirador]. Or `[items num=3 is_featured=true sort=random]`
 will display a list of three featured items. A simple link can be `[link 51]` or
-`[link 52 file=original]`.
+`[link 52 file=original]`. The last update of a site page can be `[page meta=modified]`.
 
 Shortcodes can be used nearly anywhere in site pages, even in titles. So it is
 possible to set a title with a dynamic data: `[count resource=items query="fulltext_search=xxx"]`
@@ -34,7 +34,7 @@ other Omeka module and follow the config instructions.
 
 See general end user documentation for [Installing a module].
 
-Some arguments sof some shortcodes require the module [Advanced Search].
+Some arguments of some shortcodes require the module [Advanced Search].
 
 
 Quick start
@@ -90,11 +90,15 @@ The following shortcodes can be use to display a single resource:
 - `media`
 - `item_set`
 - `collection` (alias of `item_set`)
+- `page`
+- `site`
 - `annotation` (with module [Annotate])
 
 It displays a single resource. The internal id is required to get it. Example: `[item id=51]`.
 The name of the argument `id` can be omitted: `[item 51]`. The numeric id should
-be the first argument without key. Other arguments are sent to the partial.
+be the first argument without key. Other arguments are sent to the partial. For
+page and site, the `id` is the internal id or the slug. For pages, the argument
+`site` should be used to specify the site, else the current site is used.
 
 The template is the name of the resource by default.
 
@@ -115,6 +119,21 @@ argument `file=original` or `file=large`, etc. to get it (see below).
 
 If you just need the url, use the view template `url` to display the resource as
 a simple url: `[item id=51 view=url]`, or simply `[item 51 url]`.
+
+##### As a metadata
+
+To display the metadata of a resource, use the key `meta`: `[item 51 meta=o:modified]`.
+The field names are the ones used in the json-ld representation, included any
+property term, for example `[item 51 meta=dcterms:relation]`.
+
+When multiple values are available, only the first one is displayed.
+
+The standard Omeka metadata starting with `o:` can be shortened, so to get the
+creation date of the current page, the shortcode can be `[page meta=created date=long]`.
+
+For dates (created or modified), the args `date` and `time` can be added, with
+possible values `none` (default for time), `short`, `medium` (default for date),
+`long`, and `full`.
 
 ##### Through a player
 
@@ -166,6 +185,8 @@ The following shortcodes can be use to list resources:
 - `medias` (with a `s` for multiple medias)
 - `item_sets`
 - `collections` (alias of `item_sets`)
+- `pages`
+- `sites`
 - `annotations` (with module [Annotate])
 
   To limit resources, use the same arguments than the shortcode `count`.
