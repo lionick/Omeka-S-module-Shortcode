@@ -15,6 +15,7 @@ class Resources extends AbstractShortcode
         // It's not possible to search resources for now, so use items.
         $shortcodeToResources = [
             'annotations' => 'annotations',
+            'assets' => 'assets',
             'collections' => 'item_sets',
             'items' => 'items',
             'item_sets' => 'item_sets',
@@ -94,6 +95,7 @@ class Resources extends AbstractShortcode
 
         $resourceTemplates = [
             'annotations' => 'annotations',
+            'assets' => 'assets',
             'items' => 'items',
             'item_sets' => 'item-sets',
             'media' => 'medias',

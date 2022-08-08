@@ -23,6 +23,8 @@ abstract class AbstractShortcode implements ShortcodeInterface
     protected $resourceNames = [
         'annotation' => 'annotations',
         'annotations' => 'annotations',
+        'asset' => 'assets',
+        'assets' => 'assets',
         'item' => 'items',
         'items' => 'items',
         'item_set' => 'item_sets',
@@ -48,6 +50,7 @@ abstract class AbstractShortcode implements ShortcodeInterface
      */
     protected $resourceVars = [
         'annotations' => 'annotations',
+        'assets' => 'assets',
         'items' => 'items',
         'item_sets' => 'itemSets',
         'media' => 'medias',
@@ -62,6 +65,7 @@ abstract class AbstractShortcode implements ShortcodeInterface
      */
     protected $resourceTypes = [
         'annotations' => 'annotation',
+        'assets' => 'asset',
         'items' => 'item',
         'item_sets' => 'item-set',
         'media' => 'media',
@@ -105,11 +109,19 @@ abstract class AbstractShortcode implements ShortcodeInterface
             } elseif ($meta === 'o:updated' && isset($jsonLd['o:modified'])) {
                 $meta = 'o:modified';
             }
-            // Fix a common issue.
+            // Fix specific names to avoid common issues.
             elseif ($meta === 'o:description'
                 && $resource instanceof \Omeka\Api\Representation\SiteRepresentation
             ) {
                 $meta = 'o:summary';
+            } elseif ($meta === 'o:title'
+                && $resource instanceof \Omeka\Api\Representation\AssetRepresentation
+            ) {
+                $meta = 'o:name';
+            } elseif ($meta === 'o:description'
+                && $resource instanceof \Omeka\Api\Representation\AssetRepresentation
+            ) {
+                $meta = 'o:alt_text';
             } else {
                 return '';
             }

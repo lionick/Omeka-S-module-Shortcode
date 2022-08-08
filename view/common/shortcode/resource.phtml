@@ -13,8 +13,13 @@ $plugins = $this->getHelperPluginManager();
 $escape = $plugins->get('escapeHtml');
 $thumbnail = $plugins->get('thumbnail');
 
-$title = $resource->displayTitle();
-$description = $resource->displayDescription();
+if ($resource instanceof \Omeka\Api\Representation\AssetRepresentation) {
+    $title = $resource->name();
+    $description = $resource->thumbnailAltText();
+} else {
+    $title = $resource->displayTitle();
+    $description = $resource->displayDescription();
+}
 ?>
 
 <div class="shortcode <?= $resourceType ?> resource">

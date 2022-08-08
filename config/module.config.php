@@ -26,6 +26,7 @@ return [
             'link' => Shortcode\Resource::class,
 
             'annotation' => Shortcode\Resource::class,
+            'asset' => Shortcode\Resource::class,
             'collection' => Shortcode\Resource::class,
             'item' => Shortcode\Resource::class,
             'item_set' => Shortcode\Resource::class,
@@ -35,6 +36,7 @@ return [
             'site' => Shortcode\Resource::class,
 
             'annotations' => Shortcode\Resources::class,
+            'assets' => Shortcode\Resources::class,
             'collections' => Shortcode\Resources::class,
             'items' => Shortcode\Resources::class,
             'item_sets' => Shortcode\Resources::class,

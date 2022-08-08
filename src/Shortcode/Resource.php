@@ -3,7 +3,9 @@
 namespace Shortcode\Shortcode;
 
 use Omeka\Api\Exception\NotFoundException;
+use Omeka\Api\Representation\AbstractEntityRepresentation;
 use Omeka\Api\Representation\AbstractResourceEntityRepresentation;
+use Omeka\Api\Representation\AssetRepresentation;
 use Omeka\Api\Representation\MediaRepresentation;
 
 class Resource extends AbstractShortcode
@@ -68,6 +70,13 @@ class Resource extends AbstractShortcode
                     : ['slug' => $args['id']];
                 /** @var \Omeka\Api\Representation\SiteRepresentation $resource */
                 $resource = $this->view->api()->read('sites', $queryResource)->getContent();
+            } catch (NotFoundException $e) {
+                return '';
+            }
+        } elseif ($resourceNameFromShortcode === 'assets') {
+            try {
+                /** @var \Omeka\Api\Representation\AssetRepresentation $resource */
+                $resource = $this->view->api()->read('assets', ['id' => $args['id']])->getContent();
             } catch (NotFoundException $e) {
                 return '';
             }
@@ -146,6 +155,7 @@ class Resource extends AbstractShortcode
 
         $resourceTemplates = [
             'annotations' => 'annotation',
+            'assets' => 'asset',
             'items' => 'item',
             'item_sets' => 'item-set',
             'media' => 'media',
@@ -171,18 +181,21 @@ class Resource extends AbstractShortcode
         ]);
     }
 
-    protected function urlResource(AbstractResourceEntityRepresentation $resource, array $args): ?string
+    protected function urlResource(AbstractEntityRepresentation $resource, array $args): ?string
     {
         if ($resource instanceof MediaRepresentation && isset($args['file'])) {
             // TODO Use $resource->thumbnailDisplayUrl($type) (but not use often when we want file).
             return $args['file'] === 'original'
                 ? $resource->originalUrl()
                 : $resource->thumbnailUrl($args['file']);
+        } elseif ($resource instanceof AssetRepresentation) {
+            // Asset has no public page, so use the url to the file.
+            return $resource->assetUrl();
         }
         return $resource->url(null, true);
     }
 
-    protected function renderUrl(AbstractResourceEntityRepresentation $resource, array $args): string
+    protected function renderUrl(AbstractEntityRepresentation $resource, array $args): string
     {
         $resourceUrl = $this->urlResource($resource, $args);
         if (!$resourceUrl) {
@@ -194,7 +207,7 @@ class Resource extends AbstractShortcode
             : $resourceUrl;
     }
 
-    protected function renderLink(AbstractResourceEntityRepresentation$resource, array $args): string
+    protected function renderLink(AbstractEntityRepresentation$resource, array $args): string
     {
         $resourceUrl = $this->urlResource($resource, $args);
         if (!$resourceUrl) {
@@ -224,6 +237,8 @@ class Resource extends AbstractShortcode
             $attributes['type'] = $args['file'] === 'original'
                 ? $resource->mediaType()
                 : 'image/jpeg';
+        } elseif ($resource instanceof AssetRepresentation) {
+            $attributes['type'] = $resource->mediaType();
         }
 
         $link = $hyperlink->raw($escape($title), $resourceUrl, $attributes);
