@@ -59,6 +59,17 @@ class Module extends AbstractModule
             'view.show.before',
             [$this, 'onSitePageShowBefore']
         );
+        // Possibilities: view.layout; rep.resource.values; rep.resource.display_values.
+        // If rep.resource.values, rep.resource.json_output will be affected.
+        // If rep.resource.display_values, only in the main display, not when
+        // description is displayed separately.
+        // If view.layout, may be heavy (and remove event for page).
+        // rep.value.string and rep.value.html, but not rep.value.json? May be
+        // heavy too, but designed for that. So limited to html?
+        // In theme? In layout or manually each time a value is queried? No, too heavy.
+        // Let to be used in module?
+        // Add a config? Site setting level (no: it's resource based).
+        // Limit by type and property, or even template.
     }
 
     public function onSitePageShowBefore(Event $event): void
