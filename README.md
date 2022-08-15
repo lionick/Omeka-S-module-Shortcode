@@ -149,10 +149,14 @@ When the player doesn't exist, the resource is rendered as a block, except for
 media, that is rendered with its own default renderer. The value can be `default`
 in that case too: `[media id=52 player=default]`.
 
+The player `image` allows to display the thumbnail of the resource. The
+shortcode `[image]` is a shortcode to it: `[image 51]` is like `[item 51 player=image]`.
+
 Specific options are sent to the partial and to the renderer and to the player.
 
 For media, there are specific options for the default renderer:
-  - `thumbnail`, the thumbnail type, that can be `large`, `medium` or `square`,
+  - `thumbnail`, the thumbnail type, that can be `large`, `medium` (default) or
+    `square`,
   - `align`, to align the thumbnail on `left` (default), `right` or `center`,
   - `show_title`, to specify the type of the title: `item_title` or `file_mane`.
 
