@@ -123,13 +123,15 @@ class Resource extends AbstractShortcode
             }
         }
 
+        if ($this->shortcodeName === 'image' && empty($args['player'])) {
+            $args['player'] = 'image';
+        }
+
         $player = null;
         if (isset($args['player'])) {
             $args['player'] = lcfirst($args['player']);
             if ($args['player'] === 'default' || $args['player'] === 'image') {
-                return $resourceName === 'media'
-                    ? $this->renderMedia($resource, $args)
-                    : '';
+                return $this->renderMedia($resource, $args);
             }
             $plugins = $this->view->getHelperPluginManager();
             if ($plugins->has($args['player'])) {
@@ -249,7 +251,7 @@ class Resource extends AbstractShortcode
             : $link;
     }
 
-    protected function renderMedia(MediaRepresentation $resource, array $args): string
+    protected function renderMedia(AbstractResourceEntityRepresentation $resource, array $args): string
     {
         //  This is the type of thumbnail, that is rendered and converted into a
         // class in Omeka Classic.
@@ -293,7 +295,7 @@ class Resource extends AbstractShortcode
         $partial = $this->getViewTemplate($args) ?? $defaultTemplate;
         return $this->view->partial($partial, [
             'resource' => $resource,
-            'media' => $resource,
+            'media' => $resource->primaryMedia(),
             'thumbnailType' => $thumbnailType,
             'options' => $args,
         ]);
