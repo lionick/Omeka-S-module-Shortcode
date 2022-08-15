@@ -126,7 +126,7 @@ class Resource extends AbstractShortcode
         $player = null;
         if (isset($args['player'])) {
             $args['player'] = lcfirst($args['player']);
-            if ($args['player'] === 'default') {
+            if ($args['player'] === 'default' || $args['player'] === 'image') {
                 return $resourceName === 'media'
                     ? $this->renderMedia($resource, $args)
                     : '';
@@ -270,14 +270,8 @@ class Resource extends AbstractShortcode
         } elseif (isset($args['size'])) {
             $thumbnailType = $thumbnailTypes[$args['size']] ?? 'medium';
         } else {
-            $thumbnailType = null;
+            $thumbnailType = 'medium';
         }
-
-        unset(
-            $args['thumbnail'],
-            $args['size'],
-            $args['player']
-        );
 
         $isSite = $this->view->status()->isSiteRequest();
 
@@ -286,7 +280,17 @@ class Resource extends AbstractShortcode
             ? $this->view->siteSetting('attachment_link_type', 'item')
             : $this->view->setting('attachment_link_type', 'item');
 
-        $partial = $this->getViewTemplate($args) ?? 'common/shortcode/file';
+        $defaultTemplate = $args['player'] === 'image'
+            ? 'common/shortcode/image'
+            : 'common/shortcode/file';
+
+        unset(
+            $args['thumbnail'],
+            $args['size'],
+            $args['player']
+        );
+
+        $partial = $this->getViewTemplate($args) ?? $defaultTemplate;
         return $this->view->partial($partial, [
             'resource' => $resource,
             'media' => $resource,
