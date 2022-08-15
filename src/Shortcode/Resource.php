@@ -279,10 +279,14 @@ class Resource extends AbstractShortcode
             $args['player']
         );
 
-        $args['thumbnailType'] = $thumbnailType;
-        $args['link'] = $this->view->siteSetting('attachment_link_type', 'item');
+        $isSite = $this->view->status()->isSiteRequest();
 
-        $partial = $this->getThemeTemplet($args) ?? 'common/shortcode/file';
+        $args['thumbnailType'] = $thumbnailType;
+        $args['link'] = $isSite
+            ? $this->view->siteSetting('attachment_link_type', 'item')
+            : $this->view->setting('attachment_link_type', 'item');
+
+        $partial = $this->getViewTemplate($args) ?? 'common/shortcode/file';
         return $this->view->partial($partial, [
             'resource' => $resource,
             'media' => $resource,
