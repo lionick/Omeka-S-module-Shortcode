@@ -2,6 +2,9 @@
 
 namespace Shortcode;
 
+use Omeka\Mvc\Controller\Plugin\Messenger;
+use Omeka\Stdlib\Message;
+
 /**
  * @var Module $this
  * @var \Laminas\ServiceManager\ServiceLocatorInterface $services
@@ -25,4 +28,12 @@ if (version_compare($oldVersion, '3.3.1.2', '<')) {
 
 if (version_compare($oldVersion, '3.3.1.6', '<')) {
     require_once __DIR__ . '/upgrade_vocabulary.php';
+}
+
+if (version_compare($oldVersion, '3.3.1.7', '<')) {
+    $messenger = new Messenger();
+    $message = new Message(
+        'It’s now possible to display the primary image of a resource with shortcut [image].' // @translate
+    );
+    $messenger->addSuccess($message);
 }
