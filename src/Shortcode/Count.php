@@ -46,13 +46,16 @@ class Count extends AbstractShortcode
             $query['sort_order']
         );
 
+        // Speed the computation for count via api.
+        $query['limit'] = 0;
+
         $total = (string) $this->view->api()->search($resourceName, $query)->getTotalResults();
 
         if ($partial) {
             return $this->view->partial($partial, [
                 'resourceName' => $resourceName,
                 'resourceType' => $this->resourceTypes[$resourceName],
-                'count' => 0,
+                'count' => $total,
                 'options' => $args,
             ]);
         }
