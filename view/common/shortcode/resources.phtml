@@ -14,7 +14,7 @@ $escape = $plugins->get('escapeHtml');
 $thumbnail = $plugins->get('thumbnail');
 ?>
 
-<div class="shortcode <? $resourceType ?> resources">
+<div class="shortcode resources <?= $resourceType ?>">
     <ul class="resource-list preview">
         <?php foreach ($resources as $resource):
         if ($resource instanceof \Omeka\Api\Representation\AssetRepresentation) {
@@ -25,7 +25,7 @@ $thumbnail = $plugins->get('thumbnail');
             $description = $resource->displayDescription();
         }
         ?>
-        <li class="<? $resourceType?> resource">
+        <li class="resource <?= $resourceType?>">
             <?php $thumb = $thumbnail($resource, 'medium', ['title' => $title]); ?>
             <?= $resource->linkRaw($thumb) ?>
             <h4><?= $resource->link($title) ?></h4>

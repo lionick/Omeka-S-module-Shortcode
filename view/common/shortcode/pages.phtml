@@ -10,11 +10,11 @@
 // Adapted from view/common/block-layout/browse-preview
 ?>
 
-<div class="shortcode <? $resourceType ?> resources">
+<div class="shortcode resources <?= $resourceType ?>">
     <ul class="resource-list preview">
         <?php foreach ($resources as $resource): ?>
         <?php $title = $resource->displayTitle(); ?>
-        <li class="<? $resourceType?> resource">
+        <li class="resource <?= $resourceType?>">
             <h4><?= $resource->link($title) ?></h4>
         </li>
         <?php endforeach; ?>

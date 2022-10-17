@@ -17,7 +17,7 @@ $title = $resource->title();
 $description = $resource->summary();
 ?>
 
-<div class="shortcode <?= $resourceType ?> resource">
+<div class="shortcode resource <?= $resourceType ?>">
     <?php if ($thumb = $thumbnail($resource, 'medium', ['title' => $title])): ?>
     <?= $resource->linkRaw($thumb) ?>
     <?php endif; ?>
