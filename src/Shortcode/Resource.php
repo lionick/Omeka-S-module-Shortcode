@@ -203,9 +203,8 @@ class Resource extends AbstractShortcode
         if (!$resourceUrl) {
             return '';
         }
-        $span = empty($args['span']) ? false : $this->view->escapeHtmlAttr($args['span']);
-        return $span
-            ? '<span class="' . $span . '">' . $resourceUrl . '</span>'
+        return array_key_exists('span', $args)
+            ? $this->wrapSpan($resourceUrl, $args['span'])
             : $resourceUrl;
     }
 
@@ -219,7 +218,6 @@ class Resource extends AbstractShortcode
         $plugins = $this->view->getHelperPluginManager();
         $escape = $plugins->get('escapeHtml');
         $hyperlink = $plugins->get('hyperlink');
-        $escapeAttr = $plugins->get('escapeHtmlAttr');
 
         $displayTitle = method_exists($resource, 'displayTitle')
             ? $resource->displayTitle()
@@ -245,9 +243,8 @@ class Resource extends AbstractShortcode
 
         $link = $hyperlink->raw($escape($title), $resourceUrl, $attributes);
 
-        $span = empty($args['span']) ? false : $escapeAttr($args['span']);
-        return $span
-            ? '<span class="' . $span . '">' . $link . '</span>'
+        return array_key_exists('span', $args)
+            ? $this->wrapSpan($link, $args['span'])
             : $link;
     }
 

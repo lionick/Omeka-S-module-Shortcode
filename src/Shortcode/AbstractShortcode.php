@@ -127,11 +127,6 @@ abstract class AbstractShortcode implements ShortcodeInterface
             }
         }
 
-        $plugins = $this->view->getHelperPluginManager();
-        $escape = $plugins->get('escapeHtml');
-        $escapeAttr = $plugins->get('escapeHtmlAttr');
-        $span = empty($args['span']) ? false : $escapeAttr($args['span']);
-
         $metadata = $jsonLd[$meta];
 
         if (is_array($metadata)) {
@@ -142,9 +137,14 @@ abstract class AbstractShortcode implements ShortcodeInterface
             return '';
         }
 
+        $plugins = $this->view->getHelperPluginManager();
+        $escape = $plugins->get('escapeHtml');
+
+        $hasSpan = array_key_exists('span', $args);
+
         if (is_scalar($metadata)) {
-            return $span
-                ? '<span class="' . $span . '">' . $escape($metadata) . '</span>'
+            return $hasSpan
+                ? $this->wrapSpan($escape($metadata), $args['span'])
                 : $escape($metadata);
         }
 
@@ -155,8 +155,8 @@ abstract class AbstractShortcode implements ShortcodeInterface
 
         if (method_exists($metadata, 'asHtml')) {
             $metadata = (string) $metadata->asHtml();
-            return $span
-                ? '<span class="' . $span . '">' . $metadata . '</span>'
+            return $hasSpan
+                ? $this->wrapSpan($metadata, $args['span'], false)
                 : $metadata;
         }
 
@@ -176,9 +176,30 @@ abstract class AbstractShortcode implements ShortcodeInterface
             return '';
         }
 
-        return $span
-            ? '<span class="' . $span . '">' . $escape($metadata) . '</span>'
+        return $hasSpan
+            ? $this->wrapSpan($escape($metadata), $args['span'])
             : $escape($metadata);
+    }
+
+    /**
+     * Wrap a string with a span and optionally a class.
+     *
+     * @param string $hml The value should be escaped if needed.
+     * @param string $class
+     * @return string
+     */
+    protected function wrapSpan(string $html, ?string $class = null): string
+    {
+        if (is_null($class) || trim($class) === '') {
+            return '<span>'
+                . $html
+                . '</span>';
+        }
+        $plugins = $this->view->getHelperPluginManager();
+        $escapeAttr = $plugins->get('escapeHtmlAttr');
+        return '<span class="' . $escapeAttr($class) . '">'
+            . $html
+            . '</span>';
     }
 
     /**
