@@ -78,8 +78,8 @@ in the query: `[count resource=items query="resource_class_id=32" class=dctype:P
 Note: the shortcodes arguments are a simplified variant of the keys used in the
 api.
 
-The argument `span=xxx` allows to wrap the result with a `span` with the
-specified value as class.
+As most of shortcodes, the argument `span=xxx` allows to wrap the result with a
+`span` with the specified value as class.
 
 #### Single resource
 
@@ -90,6 +90,7 @@ The following shortcodes can be use to display a single resource:
 - `media`
 - `item_set`
 - `collection` (alias of `item_set`)
+- `asset`
 - `page`
 - `site`
 - `annotation` (with module [Annotate])
@@ -196,6 +197,8 @@ The following shortcodes can be use to list resources:
   To limit resources, use the same arguments than the shortcode `count`.
   The resources are listed according to `num`, `sort`, and `order` if any.
 
+  Assets cannot be listed for now.
+
 - Deprecated shortcode names for compatibility with Omeka classic:
   - `recent_items`
     Shortcut to `[items num=5 sort=created order=desc]`.
@@ -212,30 +215,32 @@ Some generic arguments are used in many shortcodes, so they are gathered here.
 
 (If the table is not readable, go to the original page of the module [Shortcode]).
 
-| Argument name     | Purpose                                                           | Argument value                | Example                                               |
-| ----------------- | ----------------------------------------------------------------- | ----------------------------- | ----------------------------------------------------- |
-| `id`              | Get a list of resources by id.                                    | List or range of integers     | `[items id=15,30,51]`, `[items id=15-51]`             |
-| `ids`             | Deprecated alias of `id`                                          | List or range of integers     | See `id`                                              |
-| `site`            | Get only resources from the specified site                        | Integer                       | `[items site=2]`                                      |
-| `owner`           | Get only resources owned by a specific user                       | Integer                       | `[items owner=2]`                                     |
-| `user`            | Deprecated alias of `owner`                                       | Integer                       | See `owner`                                           |
-| `item_set`        | Get only resources from an item set                               | List or range of integers     | `[items item_set=7]`                                  |
-| `collection`      | Alias of `item_set`                                               | List or range of integers     | `[items collection=7]`                                |
-| `class`         * | Get only resources from one or multiple classes                   | List of terms or ids          | `[items class=dctype:StillImage,26]`                  |
-| `class_label`     | Get only resources from a class via its label                     | String                        | `[items class_label="Physical Object"]`               |
-| `item_type`       | Deprecated alias of `class_label`)                                | String                        | See `class_label`                                     |
-| `template`        | Get only resources from one or multiple templates                 | List or range of integers     | `[items template=1,2`]                                |
-| `template_label`  | Get only resources from a template via its label                  | String                        | `[items template_label="Base Resource"]`              |
-| `tag`           * | Get only resources with the specified tag (`curation:tag`)        | List of strings               | `[items tag="alpha, beta, gamma"]`                    |
-| `tags`          * | Deprecated alias of `tag`                                         | List of strings               | See `tag`                                             |
-| `is_featured`     | Get only resources with a value `curation:featured`.              | Boolean                       | `[collections is_featured=1]`                         |
-| `has_image`     * | Resource with an image (a thumbnail), or not.                     | Boolean                       | `[featured_items has_image=false]`                    |
-| `has_media`     * | Resource with a media, or not.                                    | Boolean                       | `[items has_media=true]`                              |
-| `query`           | Specify a query to limit resources                                | String (advanced search url)  | `[items query="search=xxx"]`                          |
-| `num`             | Number of resources returned. "0" means unlimited. Default: 10.   | Integer                       | `[featured_items num=4]`                              |
-| `sort`            | Property term or specific api value to sort the resource by.      | Property term or some strings | `[items sort=dcterms:date]`, `[items sort=created]`   |
-| `order`           | Order of the sorting                                              | `a`, `d`, `asc`, or `desc`    | `[items sort=dcterms:title order=asc]`                |
-| `view`            | Specify a special theme template for specific rendering           | String                        | `[items view=items]`                                  |
+| Argument name     | Purpose                                                               | Argument value                    | Example                                                           |
+| ----------------- | --------------------------------------------------------------------- | --------------------------------- | ----------------------------------------------------------------- |
+| `id`              | Get a list of resources by id.                                        | List or range of integers         | `[items id=15,30,51]`, `[items id=15-51]`                         |
+| `ids`             | Deprecated alias of `id`                                              | List or range of integers         | See `id`                                                          |
+| `site`            | Get only resources from the specified site                            | Integer                           | `[items site=2]`                                                  |
+| `owner`           | Get only resources owned by a specific user                           | Integer                           | `[items owner=2]`                                                 |
+| `user`            | Deprecated alias of `owner`                                           | Integer                           | See `owner`                                                       |
+| `item_set`        | Get only resources from an item set                                   | List or range of integers         | `[items item_set=7]`                                              |
+| `collection`      | Alias of `item_set`                                                   | List or range of integers         | `[items collection=7]`                                            |
+| `class`         * | Get only resources from one or multiple classes                       | List of terms or ids              | `[items class=dctype:StillImage,26]`                              |
+| `class_label`     | Get only resources from a class via its label                         | String                            | `[items class_label="Physical Object"]`                           |
+| `item_type`       | Deprecated alias of `class_label`)                                    | String                            | See `class_label`                                                 |
+| `template`        | Get only resources from one or multiple templates                     | List or range of integers         | `[items template=1,2`]                                            |
+| `template_label`  | Get only resources from a template via its label                      | String                            | `[items template_label="Base Resource"]`                          |
+| `tag`           * | Get only resources with the specified tag (`curation:tag`)            | List of strings                   | `[items tag="alpha, beta, gamma"]`                                |
+| `tags`          * | Deprecated alias of `tag`                                             | List of strings                   | See `tag`                                                         |
+| `is_featured`     | Get only resources with a value `curation:featured`.                  | Boolean                           | `[collections is_featured=1]`                                     |
+| `has_image`     * | Resource with an image (a thumbnail), or not.                         | Boolean                           | `[featured_items has_image=false]`                                |
+| `has_media`     * | Resource with a media, or not.                                        | Boolean                           | `[items has_media=true]`                                          |
+| `query`           | Specify a query to limit resources                                    | String (advanced search url)      | `[items query="search=xxx"]`                                      |
+| `num`             | Number of resources returned. "0" means unlimited. Default: 10.       | Integer                           | `[featured_items num=4]`                                          |
+| `sort`            | Property term or specific api value to sort the resource by.          | Property term or json-ld keys     | `[items sort=dcterms:date]`, `[items sort=created]`               |
+| `order`           | Order of the sorting                                                  | `a`, `d`, `asc`, or `desc`        | `[items sort=dcterms:title order=asc]`                            |
+| `meta`            | Get the specified metadata                                            | Property term or json-ld keys     | `[item 51 meta=dcterms:creator]`, `[item 51 meta=title]`          |
+| `span`            | Wrap the output with a span and optionally a class                    | String|Null                       | `[item 51 span=author]`                                           |
+| `view`            | Specify a special theme template for specific rendering               | String                            | `[items view=items]`                                              |
 
 The arguments marked with a `*` require the module [Advanced Search].
 
