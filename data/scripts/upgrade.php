@@ -21,6 +21,7 @@ $plugins = $services->get('ControllerPluginManager');
 $api = $plugins->get('api');
 $settings = $services->get('Omeka\Settings');
 // $config = require dirname(__DIR__, 2) . '/config/module.config.php';
+$messenger = $services->get('ControllerPluginManager')->get('messenger');
 
 if (version_compare($oldVersion, '3.3.1.2', '<')) {
     require_once __DIR__ . '/upgrade_vocabulary.php';
@@ -31,7 +32,6 @@ if (version_compare($oldVersion, '3.3.1.6', '<')) {
 }
 
 if (version_compare($oldVersion, '3.3.1.7', '<')) {
-    $messenger = new Messenger();
     $message = new Message(
         'It’s now possible to display the primary image of a resource with shortcut [image].' // @translate
     );
