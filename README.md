@@ -348,7 +348,7 @@ since 2008 (version 2.5). The same is used [in Omeka Classic] since 2014
 [wikitext]: https://en.wikipedia.org/wiki/Help:Wikitext#Links_and_URLs
 [WordPress]: https://wordpress.com/support/shortcodes/
 [Omeka Classic]: https://omeka.org/classic/docs/Content/Shortcodes/
-[Installing a module]: http://dev.omeka.org/docs/s/user-manual/modules/#installing-modules
+[Installing a module]: https://omeka.org/s/docs/user-manual/modules/#installing-modules
 [Advanced Search]: https://gitlab.com/Daniel-KM/Omeka-S-module-AdvancedSearch
 [Annotate]: https://gitlab.com/Daniel-KM/Omeka-S-module-Annotate
 [LightGallery]: https://gitlab.com/Daniel-KM/Omeka-S-module-LightGallery

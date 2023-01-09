@@ -2,7 +2,6 @@
 
 namespace Shortcode;
 
-use Omeka\Mvc\Controller\Plugin\Messenger;
 use Omeka\Stdlib\Message;
 
 /**
@@ -11,17 +10,18 @@ use Omeka\Stdlib\Message;
  * @var string $newVersion
  * @var string $oldVersion
  *
+ * @var \Omeka\Api\Manager $api
+ * @var \Omeka\Settings\Settings $settings
  * @var \Doctrine\DBAL\Connection $connection
  * @var \Doctrine\ORM\EntityManager $entityManager
- * @var \Omeka\Api\Manager $api
+ * @var \Omeka\Mvc\Controller\Plugin\Messenger $messenger
  */
-// $entityManager = $services->get('Omeka\EntityManager');
-$connection = $services->get('Omeka\Connection');
 $plugins = $services->get('ControllerPluginManager');
 $api = $plugins->get('api');
 $settings = $services->get('Omeka\Settings');
-// $config = require dirname(__DIR__, 2) . '/config/module.config.php';
-$messenger = $services->get('ControllerPluginManager')->get('messenger');
+$connection = $services->get('Omeka\Connection');
+$messenger = $plugins->get('messenger');
+$entityManager = $services->get('Omeka\EntityManager');
 
 if (version_compare($oldVersion, '3.3.1.2', '<')) {
     require_once __DIR__ . '/upgrade_vocabulary.php';

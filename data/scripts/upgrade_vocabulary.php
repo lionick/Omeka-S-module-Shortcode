@@ -3,7 +3,6 @@
 namespace Shortcode;
 
 use Omeka\Module\Exception\ModuleCannotInstallException;
-use Omeka\Mvc\Controller\Plugin\Messenger;
 use Omeka\Stdlib\Message;
 
 /**
