@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @var \Laminas\View\Renderer\PhpRenderer $this
  * @var \Omeka\Api\Representation\AbstractResourceEntityRepresentation[] $resources
@@ -10,29 +11,67 @@
 // Adapted from view/common/block-layout/browse-preview
 
 $plugins = $this->getHelperPluginManager();
+$translate = $plugins->get('translate');
 $escape = $plugins->get('escapeHtml');
 $thumbnail = $plugins->get('thumbnail');
-?>
+$assetUrl = $plugins->get('assetUrl');
+$thumbnailHelper = $plugins->get('thumbnail');
+$hyperlink = $plugins->get('hyperlink');
 
-<div class="shortcode resources <?= $resourceType ?>">
-    <ul class="resource-list preview">
-        <?php foreach ($resources as $resource):
-        if ($resource instanceof \Omeka\Api\Representation\AssetRepresentation) {
-            $title = $resource->name();
-            $description = $resource->thumbnailAltText();
-        } else {
-            $title = $resource->displayTitle();
-            $description = $resource->displayDescription();
-        }
-        ?>
-        <li class="resource <?= $resourceType?>">
-            <?php $thumb = $thumbnail($resource, 'medium', ['title' => $title]); ?>
-            <?= $resource->linkRaw($thumb) ?>
-            <h4><?= $resource->link($title) ?></h4>
-            <?php if ($description): ?>
-            <div class="description"><?= $escape($description) ?></div>
-            <?php endif; ?>
-        </li>
-        <?php endforeach; ?>
-    </ul>
-</div>
+$defaultThumbnail = '<img src="' . $assetUrl('thumbnails/default.png', 'Omeka') . '" title="' . $translate('No media') . '"/>';
+?>
+<?php if ($resourceType == 'item') : ?>
+    <div class="shortcode resources <?= $resourceType ?>">
+        <h3>EXPLORE</h3>
+        <ul class="resource-list grid">
+            <?php foreach ($resources as $resource) :
+                if ($resource instanceof \Omeka\Api\Representation\AssetRepresentation) {
+                    $title = $resource->name();
+                    $description = $resource->thumbnailAltText();
+                } else {
+                    $title = $resource->displayTitle();
+                    $description = $resource->displayDescription();
+                }
+            ?>
+                <li class="resource <?= $resourceType ?>">
+                    <?php
+                    $media = $resource->primaryMedia();
+                    $thumbnail = $media ? $thumbnailHelper($media, 'medium') : $defaultThumbnail;
+                    ?>
+                    <div class="resource-thumbnail">
+                        <?= $hyperlink->raw($thumbnail, $resource->url(), ['class' => 'resource-link']) ?>
+                    </div>
+                    <div class="resource-metadata">
+                        <div class="dc-date"><?php echo "Date: " . (!empty($escape($resource->value("dcterms:date"))) ? date("Y-m-d", strtotime($escape($resource->value("dcterms:date")))) : "-"); ?></div>
+                        <h4><?= $resource->link($title) ?></h4>
+
+                    </div>
+
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+<?php else : ?>
+    <div class="shortcode resources <?= $resourceType ?>">
+        <ul class="resource-list list">
+            <?php foreach ($resources as $resource) :
+                if ($resource instanceof \Omeka\Api\Representation\AssetRepresentation) {
+                    $title = $resource->name();
+                    $description = $resource->thumbnailAltText();
+                } else {
+                    $title = $resource->displayTitle();
+                    $description = $resource->displayDescription();
+                }
+            ?>
+                <li class="resource <?= $resourceType ?>">
+                    <?php $thumb = $thumbnail($resource, 'medium', ['title' => $title]); ?>
+                    <?= $resource->linkRaw($thumb) ?>
+                    <h4><?= $resource->link($title) ?></h4>
+                    <?php if ($description) : ?>
+                        <div class="description"><?= $escape($description) ?></div>
+                    <?php endif; ?>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+<?php endif; ?>
