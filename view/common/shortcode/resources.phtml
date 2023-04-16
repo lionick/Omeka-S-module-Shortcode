@@ -36,7 +36,7 @@ $defaultThumbnail = '<img src="' . $assetUrl('thumbnails/default.png', 'Omeka') 
                 <li class="resource <?= $resourceType ?>">
                     <?php
                     $media = $resource->primaryMedia();
-                    $thumbnail = $media ? $thumbnailHelper($media, 'medium') : $defaultThumbnail;
+                    $thumbnail = $media ? $thumbnailHelper($media, 'square') : $defaultThumbnail;
                     ?>
                     <div class="resource-thumbnail">
                         <?= $hyperlink->raw($thumbnail, $resource->url(), ['class' => 'resource-link']) ?>
